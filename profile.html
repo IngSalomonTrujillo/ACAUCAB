@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Mi Perfil</title>
+    <link rel="stylesheet" href="products.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-beer-mug-empty"></i>
+                <span>ACAUCAB</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="products.html">Productos</a>
+                <a href="#ofertas">Ofertas</a>
+                <a href="#eventos">Eventos</a>
+                <a href="#nosotros">Nosotros</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <div class="user-menu">
+                    <button class="user-btn" id="userBtn">
+                        <i class="fas fa-user"></i>
+                        <span id="userName">Usuario</span>
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="profile.html" class="active"><i class="fas fa-user-edit"></i> Mi Perfil</a>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+                
+                <button class="cart-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="profile-container">
+                <div class="profile-sidebar">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                        <h3 id="profileName">Nombre Usuario</h3>
+                        <p id="profileEmail">email@ejemplo.com</p>
+                    </div>
+                    
+                    <nav class="profile-nav">
+                        <a href="#" class="profile-nav-item active" data-tab="info">
+                            <i class="fas fa-user"></i> Información Personal
+                        </a>
+                        <a href="#" class="profile-nav-item" data-tab="orders">
+                            <i class="fas fa-shopping-bag"></i> Mis Pedidos
+                        </a>
+                        <a href="#" class="profile-nav-item" data-tab="favorites">
+                            <i class="fas fa-heart"></i> Favoritos
+                        </a>
+                        <a href="#" class="profile-nav-item" data-tab="security">
+                            <i class="fas fa-lock"></i> Seguridad
+                        </a>
+                    </nav>
+                </div>
+                
+                <div class="profile-content">
+                    <!-- Personal Info Tab -->
+                    <div class="profile-tab active" id="info">
+                        <h2>Información Personal</h2>
+                        <form id="profileForm" class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">Nombre</label>
+                                    <input type="text" id="firstName" name="firstName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Apellido</label>
+                                    <input type="text" id="lastName" name="lastName">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Correo Electrónico</label>
+                                <input type="email" id="email" name="email">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Teléfono</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="address">Dirección</label>
+                                <textarea id="address" name="address" rows="3"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Orders Tab -->
+                    <div class="profile-tab" id="orders">
+                        <h2>Mis Pedidos</h2>
+                        <div class="orders-list" id="ordersList">
+                            <!-- Orders will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Favorites Tab -->
+                    <div class="profile-tab" id="favorites">
+                        <h2>Productos Favoritos</h2>
+                        <div class="favorites-grid" id="favoritesGrid">
+                            <!-- Favorites will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Security Tab -->
+                    <div class="profile-tab" id="security">
+                        <h2>Cambiar Contraseña</h2>
+                        <form id="passwordForm" class="profile-form">
+                            <div class="form-group">
+                                <label for="currentPassword">Contraseña Actual</label>
+                                <input type="password" id="currentPassword" name="currentPassword" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newPassword">Nueva Contraseña</label>
+                                <input type="password" id="newPassword" name="newPassword" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmNewPassword">Confirmar Nueva Contraseña</label>
+                                <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-key"></i> Cambiar Contraseña
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="notification" class="notification"></div>
+    <script src="products.js"></script>
+</body>
+</html>

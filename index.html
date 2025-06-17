@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Asociación de Cerveceros Artesanales</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <i class="fas fa-beer-mug-empty"></i>
+                    <span>ACAUCAB</span>
+                </div>
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="#inicio">Inicio</a>
+                <a href="#productos">Productos</a>
+                <a href="#miembros">Miembros</a>
+                <a href="#eventos">Eventos</a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+            
+            <div class="nav-right">
+                <button class="nav-icon" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <a href="login.html" class="nav-icon" id="userBtn">
+                    <i class="fas fa-user"></i>
+                </a>
+                <button class="nav-icon" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-container">
+            <input type="text" placeholder="Buscar cervezas, eventos, miembros..." class="search-input">
+            <button class="search-close" id="searchClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-background">
+                <div class="hero-overlay"></div>
+                <img src="/placeholder.svg?height=600&width=1200" alt="Cerveza Artesanal" class="hero-image">
+            </div>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        La Cerveza Artesanal
+                        <span class="highlight">Venezolana</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Descubre la pasión y autenticidad de nuestros cerveceros artesanales. 
+                        Más de 30 etiquetas únicas elaboradas con ingredientes naturales y tradición.
+                    </p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-shopping-bag"></i>
+                            Explorar Productos
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-users"></i>
+                            Conocer Miembros
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">54</span>
+                        <span class="stat-label">Miembros Fundadores</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">Etiquetas Únicas</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">2012</span>
+                        <span class="stat-label">Año de Fundación</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3>100% Natural</h3>
+                        <p>Elaborada únicamente con ingredientes tradicionales: malta de cebada, agua, lúpulo y levadura.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Hecha con Pasión</h3>
+                        <p>Cada botella cuenta una historia única, elaborada con dedicación y amor por el arte cervecero.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h3>Calidad Premium</h3>
+                        <p>Máxima atención a cada detalle del proceso, asegurando un producto final de superior calidad.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Innovación Constante</h3>
+                        <p>Siempre creando nuevas combinaciones y sorprendiendo paladares con sabores únicos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Preview -->
+        <section class="products-preview">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Nuestras Cervezas Destacadas</h2>
+                    <p>Descubre la variedad de sabores que nuestros miembros tienen para ofrecerte</p>
+                </div>
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/placeholder.svg?height=300&width=200" alt="Destilo Amber Ale">
+                            <div class="product-overlay">
+                                <button class="btn btn-small">Ver Detalles</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h4>Destilo</h4>
+                            <p class="product-type">Amber Ale</p>
+                            <p class="product-description">Primera cerveza genuina ultra Premium tipo Ale hecha en Venezuela.</p>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/placeholder.svg?height=300&width=200" alt="Benitz Pale Ale">
+                            <div class="product-overlay">
+                                <button class="btn btn-small">Ver Detalles</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h4>Benitz</h4>
+                            <p class="product-type">Pale Ale</p>
+                            <p class="product-description">Balance perfecto entre el sabor dulce de las maltas y el suave amargor del lúpulo.</p>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="/placeholder.svg?height=300&width=200" alt="Mito Candileja">
+                            <div class="product-overlay">
+                                <button class="btn btn-small">Ver Detalles</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h4>Mito Candileja</h4>
+                            <p class="product-type">Belgian Dubbel</p>
+                            <p class="product-description">Inspirada en técnicas monásticas, con intenso aroma a caramelo y frutas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-footer">
+                    <button class="btn btn-outline">Ver Todos los Productos</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="newsletter">
+            <div class="container">
+                <div class="newsletter-content">
+                    <div class="newsletter-text">
+                        <h3>DiarioDeUnaCerveza</h3>
+                        <p>Recibe nuestras ofertas especiales cada 30 días y mantente al día con los eventos de la comunidad cervecera.</p>
+                    </div>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Tu correo electrónico" class="newsletter-input">
+                        <button class="btn btn-primary">Suscribirse</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-beer-mug-empty"></i>
+                        <span>ACAUCAB</span>
+                    </div>
+                    <p>Asociación de Cerveceros Artesanales de la UCAB. Promoviendo la cultura cervecera artesanal en Venezuela desde 2012.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="#productos">Productos</a></li>
+                        <li><a href="#miembros">Miembros</a></li>
+                        <li><a href="#eventos">Eventos</a></li>
+                        <li><a href="#nosotros">Sobre Nosotros</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Servicios</h4>
+                    <ul>
+                        <li><a href="#afiliacion">Afiliación</a></li>
+                        <li><a href="#distribucion">Distribución</a></li>
+                        <li><a href="#eventos">Organización de Eventos</a></li>
+                        <li><a href="#capacitacion">Capacitación</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> info@acaucab.com</p>
+                        <p><i class="fas fa-phone"></i> +58 212 123-4567</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Caracas, Venezuela</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ACAUCAB. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

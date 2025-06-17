@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Panel de Usuario</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <link rel="stylesheet" href="dashboard-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-beer"></i>
+                    <span>ACAUCAB</span>
+                </a>
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="index.html">Inicio</a>
+                <a href="#productos">Productos</a>
+                <a href="#miembros">Miembros</a>
+                <a href="#eventos">Eventos</a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+            
+            <div class="nav-right">
+                <button class="nav-icon" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div class="user-dropdown">
+                    <button class="nav-icon active" id="userBtn">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <p class="user-name" id="userName">Nombre de Usuario</p>
+                            <p class="user-email" id="userEmail">usuario@ejemplo.com</p>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i> Panel de Usuario
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-shopping-bag"></i> Mis Pedidos
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-heart"></i> Favoritos
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Configuración
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+                <button class="nav-icon" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-container">
+            <input type="text" placeholder="Buscar cervezas, eventos, miembros..." class="search-input">
+            <button class="search-close" id="searchClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="dashboard-section">
+            <div class="container">
+                <div class="dashboard-header">
+                    <h1>Panel de Usuario</h1>
+                    <p>Bienvenido a tu cuenta de ACAUCAB</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-sidebar">
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-info">
+                                <h3 id="sidebarUserName">Nombre de Usuario</h3>
+                                <p id="userType">Persona Natural</p>
+                            </div>
+                        </div>
+                        
+                        <nav class="dashboard-nav">
+                            <a href="#" class="dashboard-nav-item active" data-tab="resumen">
+                                <i class="fas fa-home"></i> Resumen
+                            </a>
+                            <a href="#" class="dashboard-nav-item" data-tab="pedidos">
+                                <i class="fas fa-shopping-bag"></i> Mis Pedidos
+                            </a>
+                            <a href="#" class="dashboard-nav-item" data-tab="puntos">
+                                <i class="fas fa-star"></i> Mis Puntos
+                            </a>
+                            <a href="#" class="dashboard-nav-item" data-tab="favoritos">
+                                <i class="fas fa-heart"></i> Favoritos
+                            </a>
+                            <a href="#" class="dashboard-nav-item" data-tab="perfil">
+                                <i class="fas fa-user-edit"></i> Editar Perfil
+                            </a>
+                            <a href="#" class="dashboard-nav-item" data-tab="direcciones">
+                                <i class="fas fa-map-marker-alt"></i> Direcciones
+                            </a>
+                            <a href="#" class="dashboard-nav-item" data-tab="seguridad">
+                                <i class="fas fa-lock"></i> Seguridad
+                            </a>
+                            <a href="#" class="dashboard-nav-item logout-btn" id="sidebarLogoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            </a>
+                        </nav>
+                    </div>
+                    
+                    <div class="dashboard-content">
+                        <!-- Resumen Tab -->
+                        <div class="dashboard-tab active" id="resumen">
+                            <div class="dashboard-welcome">
+                                <h2>¡Hola, <span id="welcomeUserName">Usuario</span>!</h2>
+                                <p>Desde aquí puedes gestionar tu cuenta y ver el historial de tus pedidos.</p>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h3>0</h3>
+                                        <p>Pedidos Realizados</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h3>0</h3>
+                                        <p>Puntos Acumulados</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h3>0</h3>
+                                        <p>Productos Favoritos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="recent-orders">
+                                <div class="section-header">
+                                    <h3>Pedidos Recientes</h3>
+                                    <a href="#" class="view-all" data-tab="pedidos">Ver todos</a>
+                                </div>
+                                
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <h4>No tienes pedidos recientes</h4>
+                                    <p>Cuando realices un pedido, aparecerá aquí.</p>
+                                    <a href="#productos" class="btn btn-primary">Explorar Productos</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Otros tabs se mostrarán dinámicamente con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-beer"></i>
+                        <span>ACAUCAB</span>
+                    </div>
+                    <p>Asociación de Cerveceros Artesanales de la UCAB. Promoviendo la cultura cervecera artesanal en Venezuela desde 2012.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="#productos">Productos</a></li>
+                        <li><a href="#miembros">Miembros</a></li>
+                        <li><a href="#eventos">Eventos</a></li>
+                        <li><a href="#nosotros">Sobre Nosotros</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Servicios</h4>
+                    <ul>
+                        <li><a href="#afiliacion">Afiliación</a></li>
+                        <li><a href="#distribucion">Distribución</a></li>
+                        <li><a href="#eventos">Organización de Eventos</a></li>
+                        <li><a href="#capacitacion">Capacitación</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> info@acaucab.com</p>
+                        <p><i class="fas fa-phone"></i> +58 212 123-4567</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Caracas, Venezuela</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ACAUCAB. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="auth-script.js"></script>
+    <script src="dashboard-script.js"></script>
+</body>
+</html>

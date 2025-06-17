@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Productos</title>
+    <link rel="stylesheet" href="products.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-beer-mug-empty"></i>
+                <span>ACAUCAB</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="products.html" class="active">Productos</a>
+                <a href="#ofertas">Ofertas</a>
+                <a href="#eventos">Eventos</a>
+                <a href="#nosotros">Nosotros</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar productos...">
+                    <i class="fas fa-search"></i>
+                </div>
+                
+                <div class="user-menu">
+                    <button class="user-btn" id="userBtn">
+                        <i class="fas fa-user"></i>
+                        <span id="userName">Usuario</span>
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="profile.html"><i class="fas fa-user-edit"></i> Mi Perfil</a>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+                
+                <button class="cart-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Cervezas Artesanales Premium</h1>
+                <p>Descubre nuestra selección de cervezas artesanales venezolanas</p>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters">
+            <div class="container">
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label>Categoría:</label>
+                        <select id="categoryFilter">
+                            <option value="">Todas</option>
+                            <option value="ale">Ale</option>
+                            <option value="lager">Lager</option>
+                            <option value="stout">Stout</option>
+                            <option value="ipa">IPA</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Precio:</label>
+                        <select id="priceFilter">
+                            <option value="">Todos</option>
+                            <option value="0-20">$0 - $20</option>
+                            <option value="20-40">$20 - $40</option>
+                            <option value="40-60">$40 - $60</option>
+                            <option value="60+">$60+</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Ordenar por:</label>
+                        <select id="sortFilter">
+                            <option value="name">Nombre</option>
+                            <option value="price-low">Precio: Menor a Mayor</option>
+                            <option value="price-high">Precio: Mayor a Menor</option>
+                            <option value="rating">Calificación</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="products">
+            <div class="container">
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Carrito de Compras</h3>
+            <button class="close-cart" id="closeCart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be loaded here -->
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total: $<span id="cartTotal">0.00</span></strong>
+            </div>
+            <button class="btn-primary" id="checkoutBtn">
+                <i class="fas fa-credit-card"></i>
+                Proceder al Pago
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="modal-body" id="modalBody">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+    <script src="products.js"></script>
+</body>
+</html>
