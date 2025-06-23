@@ -14,7 +14,7 @@ ALTER TABLE Asistencia
 CREATE TABLE Beneficio 
     ( 
      beneficio_id          serial  NOT NULL , 
-     nombre_beneficio      VARCHAR (20)  NOT NULL , 
+     nombre_beneficio      VARCHAR (50)  NOT NULL , 
      descripción_beneficio text  NOT NULL 
     ) 
 ;
@@ -25,7 +25,7 @@ ALTER TABLE Beneficio
 CREATE TABLE Característica 
     ( 
      característica_id          serial  NOT NULL , 
-     nombre_característica      VARCHAR (20)  NOT NULL , 
+     nombre_característica      VARCHAR (50)  NOT NULL , 
      descripción_caracteristica text  NOT NULL 
     ) 
 ;
@@ -36,7 +36,7 @@ ALTER TABLE Característica
 CREATE TABLE Cerveza 
     ( 
      cerveza_id                   serial  NOT NULL , 
-     nombre_cerveza               VARCHAR (20)  NOT NULL , 
+     nombre_cerveza               VARCHAR (50)  NOT NULL , 
      descripción                  text  NOT NULL , 
      Tipo_Cerveza_tipo_cerveza_id INTEGER  NOT NULL , 
      presentación_id              INTEGER  NOT NULL 
@@ -72,7 +72,7 @@ CREATE TABLE Cheque
      método_pago_id INTEGER  NOT NULL , 
      número_cuenta  INTEGER  NOT NULL , 
      banco          text  NOT NULL , 
-     número_cheque  VARCHAR (15)  NOT NULL 
+     número_cheque  VARCHAR (30)  NOT NULL 
     ) 
 ;
 
@@ -82,9 +82,8 @@ ALTER TABLE Cheque
 CREATE TABLE Cliente 
     ( 
      RIF                          INTEGER  NOT NULL , 
-     tipo_cliente                 VARCHAR (20)  NOT NULL , 
-     número_carnet                VARCHAR (8)  NOT NULL , 
-     Correo_Electrónico_correo_id INTEGER  NOT NULL 
+     tipo_cliente                 VARCHAR (50)  NOT NULL , 
+     número_carnet                VARCHAR (8)  NOT NULL 
     ) 
 ;
 
@@ -105,7 +104,7 @@ ALTER TABLE Cliente_Punto
 CREATE TABLE Compra 
     ( 
      compra_id                           serial  NOT NULL , 
-     tipo_compra                         VARCHAR (20)  NOT NULL , 
+     tipo_compra                         VARCHAR (50)  NOT NULL , 
      monto_total                         decimal  NOT NULL , 
      puntos_ganados                      INTEGER , 
      Proveedor_proveedor_id              INTEGER  NOT NULL , 
@@ -122,7 +121,7 @@ ALTER TABLE Compra
 CREATE TABLE Compra_Estatus 
     ( 
      fecha_inicio        DATE  NOT NULL , 
-     fecha_fin           DATE  NOT NULL , 
+     fecha_fin           DATE , 
      Estatus_estatus_id  INTEGER  NOT NULL , 
      Compra_proveedor_id INTEGER  NOT NULL , 
      Compra_compra_id    INTEGER  NOT NULL 
@@ -173,9 +172,9 @@ ALTER TABLE Correo_Electrónico
 CREATE TABLE Crédito 
     ( 
      método_pago_id INTEGER  NOT NULL , 
-     cuenta         VARCHAR (20)  NOT NULL , 
+     cuenta         VARCHAR (50)  NOT NULL , 
      banco          text  NOT NULL , 
-     número_tarjeta VARCHAR (15)  NOT NULL 
+     número_tarjeta VARCHAR (30)  NOT NULL 
     ) 
 ;
 
@@ -185,9 +184,9 @@ ALTER TABLE Crédito
 CREATE TABLE Cuota 
     ( 
      cuota_id               serial  NOT NULL , 
-     descripción            VARCHAR (20)  NOT NULL , 
+     descripción            VARCHAR (50)  NOT NULL , 
      monto_cuota            decimal  NOT NULL , 
-     periodicidad           VARCHAR (20)  NOT NULL , 
+     periodicidad           VARCHAR (50)  NOT NULL , 
      fecha_vigencia_monto   DATE  NOT NULL , 
      Proveedor_proveedor_id INTEGER  NOT NULL 
     ) 
@@ -199,9 +198,9 @@ ALTER TABLE Cuota
 CREATE TABLE Débito 
     ( 
      método_pago_id INTEGER  NOT NULL , 
-     cuenta         VARCHAR (20)  NOT NULL , 
+     cuenta         VARCHAR (50)  NOT NULL , 
      banco          text  NOT NULL , 
-     número_tarjeta VARCHAR (15)  NOT NULL 
+     número_tarjeta VARCHAR (30)  NOT NULL 
     ) 
 ;
 
@@ -211,7 +210,7 @@ ALTER TABLE Débito
 CREATE TABLE Departamento 
     ( 
      departamento_id     serial  NOT NULL , 
-     nombre_departamento VARCHAR (20)  NOT NULL 
+     nombre_departamento VARCHAR (50)  NOT NULL 
     ) 
 ;
 
@@ -314,7 +313,7 @@ ALTER TABLE Detalle_VentaE
 CREATE TABLE Efectivo 
     ( 
      método_pago_id INTEGER  NOT NULL , 
-     tipo_divisa    VARCHAR (20)  NOT NULL 
+     tipo_divisa    VARCHAR (50)  NOT NULL 
     ) 
 ;
 
@@ -324,11 +323,11 @@ ALTER TABLE Efectivo
 CREATE TABLE Empleado 
     ( 
      empleado_id      serial  NOT NULL , 
-     cédula_identidad VARCHAR (20)  NOT NULL , 
-     primer_nombre    VARCHAR (20)  NOT NULL , 
-     segundo_nombre   VARCHAR (20) , 
-     primer_apellido  VARCHAR (20)  NOT NULL , 
-     segundo_apellido VARCHAR (20) , 
+     cédula_identidad VARCHAR (50)  NOT NULL , 
+     primer_nombre    VARCHAR (50)  NOT NULL , 
+     segundo_nombre   VARCHAR (50) , 
+     primer_apellido  VARCHAR (50)  NOT NULL , 
+     segundo_apellido VARCHAR (50) , 
      fecha_ingreso    DATE  NOT NULL , 
      salario          decimal  NOT NULL 
     ) 
@@ -367,7 +366,7 @@ ALTER TABLE Entrada_Evento
 CREATE TABLE Estatus 
     ( 
      estatus_id          serial  NOT NULL , 
-     estatus_nombre      VARCHAR (20)  NOT NULL , 
+     estatus_nombre      VARCHAR (50)  NOT NULL , 
      descripción_estatus text 
     ) 
 ;
@@ -378,7 +377,7 @@ ALTER TABLE Estatus
 CREATE TABLE Evento 
     ( 
      evento_id                  INTEGER  NOT NULL , 
-     nombre_evento              VARCHAR (20)  NOT NULL , 
+     nombre_evento              VARCHAR (50)  NOT NULL , 
      fecha_inicio               DATE  NOT NULL , 
      fecha_fin                  DATE , 
      descripción_evento         text  NOT NULL , 
@@ -395,9 +394,9 @@ ALTER TABLE Evento
 CREATE TABLE Horario 
     ( 
      horario_id            serial  NOT NULL , 
-     dias_semana           VARCHAR (20)  NOT NULL , 
-     hora_entrada_esperada TIMESTAMP  NOT NULL , 
-     hora_salida_esperada  TIMESTAMP  NOT NULL 
+     dias_semana           VARCHAR (50)  NOT NULL , 
+     hora_entrada_esperada TIME  NOT NULL , 
+     hora_salida_esperada  TIME  NOT NULL 
     ) 
 ;
 
@@ -407,7 +406,7 @@ ALTER TABLE Horario
 CREATE TABLE Ingrediente 
     ( 
      ingrediente_id             serial  NOT NULL , 
-     nombre_ingrediente         VARCHAR (20)  NOT NULL , 
+     nombre_ingrediente         VARCHAR (50)  NOT NULL , 
      Ingrediente_ingrediente_id INTEGER 
     ) 
 ;
@@ -437,10 +436,8 @@ ALTER TABLE Instruccion_Receta
 
 CREATE TABLE Inventario 
     ( 
-     Tienda_Online_tienda_online_id                    INTEGER  NOT NULL , 
+     Tienda_Online_tienda_online_id                    INTEGER  , 
      cantidad_presentaciones                           INTEGER  NOT NULL , 
-     Lugar_Tienda_tienda_fisica_id                     INTEGER  NOT NULL , 
-     Lugar_Tienda_lugar_tienda_id                      INTEGER  NOT NULL , 
      Cerveza_Presentacion_Cerveza_cerveza_id           INTEGER  NOT NULL , 
      Cerveza_Presentacion_Presentación_presentación_id INTEGER  NOT NULL , 
      inventario_id                                     serial  NOT NULL 
@@ -465,7 +462,7 @@ ALTER TABLE Inventario_E_Cerveza_P
 CREATE TABLE Juez 
     ( 
      juez_id     serial  NOT NULL , 
-     nombre_juez VARCHAR (20)  NOT NULL 
+     nombre_juez VARCHAR (50)  NOT NULL 
     ) 
 ;
 
@@ -485,8 +482,8 @@ ALTER TABLE Juez_Evento
 CREATE TABLE Jurídico 
     ( 
      RIF                    INTEGER  NOT NULL , 
-     razón_social           VARCHAR (20)  NOT NULL , 
-     denominación_comercial VARCHAR (20)  NOT NULL , 
+     razón_social           VARCHAR (50)  NOT NULL , 
+     denominación_comercial VARCHAR (50)  NOT NULL , 
      página_web             VARCHAR (60) , 
      capital_disponible     decimal  NOT NULL , 
      dirección_fiscal       text  NOT NULL , 
@@ -502,9 +499,9 @@ ALTER TABLE Jurídico
 CREATE TABLE Lugar 
     ( 
      lugar_id       serial  NOT NULL ,
-     Nombre         VARCHAR (20)  NOT NULL , 
-     Tipo           VARCHAR (20)  NOT NULL , 
-     Lugar_lugar_id integer NOT NULL
+     Nombre         VARCHAR (50)  NOT NULL , 
+     Tipo           VARCHAR (50)  NOT NULL , 
+     Lugar_lugar_id integer 
 
     ) 
 ;
@@ -516,8 +513,8 @@ CREATE TABLE Lugar_Tienda
     ( 
      Tienda_Física_tienda_fisica_id              INTEGER  NOT NULL , 
      lugar_tienda_id                             serial  NOT NULL , 
-     nombre_lugar_tienda                         VARCHAR (20)  NOT NULL , 
-     tipo_lugar_tienda                           VARCHAR (20)  NOT NULL , 
+     nombre_lugar_tienda                         VARCHAR (50)  NOT NULL , 
+     tipo_lugar_tienda                           VARCHAR (50)  NOT NULL , 
      Lugar_Tienda_Tienda_Física_tienda_fisica_id INTEGER , 
      Lugar_Tienda_lugar_tienda_id                INTEGER , 
      Inventario_inventario_id                    INTEGER  NOT NULL 
@@ -540,10 +537,10 @@ CREATE TABLE PersonaNatural
     ( 
      RIF              INTEGER  NOT NULL , 
      cedula_identidad VARCHAR (12)  NOT NULL , 
-     primer_nombre    VARCHAR (20)  NOT NULL , 
-     segundo_nombre   VARCHAR (20) , 
-     primer_apellido  VARCHAR (20)  NOT NULL , 
-     segundo_apellido VARCHAR (20) , 
+     primer_nombre    VARCHAR (50)  NOT NULL , 
+     segundo_nombre   VARCHAR (50) , 
+     primer_apellido  VARCHAR (50)  NOT NULL , 
+     segundo_apellido VARCHAR (50) , 
      Lugar_lugar_id   integer  
     ) 
 ;
@@ -570,7 +567,7 @@ ALTER TABLE Orden_Reposición
 CREATE TABLE OrdenR_Estatus 
     ( 
      fecha_inicio                         DATE  NOT NULL , 
-     fecha_fin                            DATE  NOT NULL , 
+     fecha_fin                            DATE , 
      Orden_Reposición_orden_reposición_id INTEGER  NOT NULL , 
      Estatus_estatus_id                   INTEGER  NOT NULL 
     ) 
@@ -584,7 +581,7 @@ CREATE TABLE Pago_Compra_Evento
      Método_Pago_método_pago_id     INTEGER  NOT NULL , 
      fecha_pago                     DATE  NOT NULL , 
      monto_pagado                   decimal  NOT NULL , 
-     referencia_pago                VARCHAR (20)  NOT NULL , 
+     referencia_pago                VARCHAR (50)  NOT NULL , 
      Compra_Evento_Cliente_RIF      INTEGER  NOT NULL , 
      Compra_Evento_Evento_evento_id INTEGER  NOT NULL 
     ) 
@@ -598,7 +595,7 @@ CREATE TABLE Pago_CompraP
      Método_Pago_método_pago_id INTEGER  NOT NULL , 
      fecha_pago                 DATE  NOT NULL , 
      monto_pagado               decimal  NOT NULL , 
-     referencia_pago            VARCHAR (20)  NOT NULL , 
+     referencia_pago            VARCHAR (50)  NOT NULL , 
      Compra_proveedor_id        INTEGER  NOT NULL , 
      Compra_compra_id           INTEGER  NOT NULL 
     ) 
@@ -613,7 +610,7 @@ CREATE TABLE Pago_Cuota
      Cuota_cuota_id             INTEGER  NOT NULL , 
      fecha_pago                 DATE  NOT NULL , 
      monto_pagado               decimal  NOT NULL , 
-     recibo_id                  VARCHAR (20)  NOT NULL 
+     recibo_id                  VARCHAR (50)  NOT NULL 
     ) 
 ;
 
@@ -625,7 +622,7 @@ CREATE TABLE Pago_Entrada
      Método_Pago_método_pago_id     INTEGER  NOT NULL , 
      fecha_pago                     DATE  NOT NULL , 
      monto_pagado                   decimal  NOT NULL , 
-     referencia_pago                VARCHAR (20)  NOT NULL , 
+     referencia_pago                VARCHAR (50)  NOT NULL , 
      Venta_Entrada_Cliente_RIF      INTEGER  NOT NULL , 
      Venta_Entrada_Evento_evento_id INTEGER  NOT NULL , 
      Venta_Entrada_venta_entrada_id INTEGER  NOT NULL 
@@ -639,7 +636,7 @@ CREATE TABLE Pago_Fisica
     ( 
      fecha_pago                    DATE  NOT NULL , 
      monto_pagado                  decimal  NOT NULL , 
-     referencia_pago               VARCHAR (20)  NOT NULL , 
+     referencia_pago               VARCHAR (50)  NOT NULL , 
      Venta_Física_tienda_fisica_id INTEGER  NOT NULL , 
      Venta_Física_usuario_id       INTEGER  NOT NULL , 
      Método_Pago_método_pago_id    INTEGER  NOT NULL , 
@@ -655,7 +652,7 @@ CREATE TABLE Pago_Online
      Método_Pago_método_pago_id    INTEGER  NOT NULL , 
      fecha_pago                    DATE  NOT NULL , 
      monto_pagado                  decimal  NOT NULL , 
-     referencia_pago               VARCHAR (20)  NOT NULL , 
+     referencia_pago               VARCHAR (50)  NOT NULL , 
      Venta_Online_tienda_online_id INTEGER  NOT NULL , 
      Venta_Online_usuario_id       INTEGER  NOT NULL , 
      puntos_usados                 INTEGER 
@@ -682,9 +679,9 @@ CREATE TABLE Persona_Contacto
     ( 
      Proveedor_proveedor_id INTEGER , 
      contacto_id            serial  NOT NULL , 
-     nombre_contacto        VARCHAR (20)  NOT NULL , 
-     cargo_contacto         VARCHAR (20)  NOT NULL , 
-     teléfono_contacto      VARCHAR (20)  NOT NULL , 
+     nombre_contacto        VARCHAR (50)  NOT NULL , 
+     cargo_contacto         VARCHAR (50)  NOT NULL , 
+     teléfono_contacto      VARCHAR (50)  NOT NULL , 
      Jurídico_RIF           INTEGER 
     ) 
 ;
@@ -702,8 +699,8 @@ ALTER TABLE Persona_Contacto
 CREATE TABLE Presentación 
     ( 
      presentación_id     serial  NOT NULL , 
-     nombre_presentación VARCHAR (20)  NOT NULL , 
-     medida              VARCHAR (20)  NOT NULL 
+     nombre_presentación VARCHAR (50)  NOT NULL , 
+     medida              VARCHAR (50)  NOT NULL 
     ) 
 ;
 
@@ -713,7 +710,7 @@ ALTER TABLE Presentación
 CREATE TABLE Privilegio 
     ( 
      privilegio_id          serial  NOT NULL , 
-     nombre_privilegio      VARCHAR (20)  NOT NULL , 
+     nombre_privilegio      VARCHAR (50)  NOT NULL , 
      descripción_privilegio text  NOT NULL 
     ) 
 ;
@@ -724,13 +721,12 @@ ALTER TABLE Privilegio
 CREATE TABLE Proveedor 
     ( 
      proveedor_id                 serial  NOT NULL , 
-     razón_social                 VARCHAR (20)  NOT NULL , 
-     denominación_comercial       VARCHAR (20)  NOT NULL , 
-     RIF                          VARCHAR (20)  NOT NULL , 
+     razón_social                 VARCHAR (50)  NOT NULL , 
+     denominación_comercial       VARCHAR (50)  NOT NULL , 
+     RIF                          VARCHAR (50)  NOT NULL , 
      dirección_fiscal             text  NOT NULL , 
-     página_web                   VARCHAR (20)  NOT NULL , 
+     página_web                   VARCHAR (50)  NOT NULL , 
      fecha_afiliación             DATE  NOT NULL , 
-     Persona_Contacto_contacto_id INTEGER  NOT NULL , 
      direccion_fisica             text  NOT NULL , 
      Lugar_lugar_id               integer NOT NULL , 
      Lugar_lugar_id2              integer NOT NULL 
@@ -752,8 +748,7 @@ ALTER TABLE Punto
 CREATE TABLE Receta 
     ( 
      receta_id                    serial  NOT NULL , 
-     nombre_receta                VARCHAR (20)  NOT NULL , 
-     Tipo_Cerveza_tipo_cerveza_id INTEGER  NOT NULL 
+     nombre_receta                VARCHAR (50)  NOT NULL 
     ) 
 ;
 
@@ -764,7 +759,7 @@ CREATE TABLE Receta_Ingrediente
     ( 
      Receta_receta_id           INTEGER  NOT NULL , 
      cantidad                   decimal  NOT NULL , 
-     unidad_medida              VARCHAR (20)  NOT NULL , 
+     unidad_medida              VARCHAR (50)  NOT NULL , 
      Ingrediente_ingrediente_id INTEGER  NOT NULL 
     ) 
 ;
@@ -775,7 +770,7 @@ ALTER TABLE Receta_Ingrediente
 CREATE TABLE Rol 
     ( 
      rol_id          serial  NOT NULL , 
-     nombre_rol      VARCHAR (20)  NOT NULL , 
+     nombre_rol      VARCHAR (50)  NOT NULL , 
      descripción_rol text  NOT NULL 
     ) 
 ;
@@ -844,7 +839,7 @@ ALTER TABLE Teléfono
 CREATE TABLE Tienda_Física 
     ( 
      tienda_fisica_id                     INTEGER  NOT NULL , 
-     nombre_ubicación                     VARCHAR (20)  NOT NULL , 
+     nombre_ubicación                     VARCHAR (50)  NOT NULL , 
      Orden_Reposición_orden_reposición_id INTEGER  NOT NULL , 
      Lugar_lugar_id                       integer  NOT NULL 
     ) 
@@ -856,8 +851,7 @@ ALTER TABLE Tienda_Física
 CREATE TABLE Tienda_Online 
     ( 
      tienda_online_id         serial  NOT NULL , 
-     dirección_web            VARCHAR (40)  NOT NULL , 
-     Inventario_inventario_id INTEGER  NOT NULL 
+     dirección_web            VARCHAR (40)  NOT NULL 
     ) 
 ;
 
@@ -868,9 +862,9 @@ CREATE TABLE Tipo_Cerveza
     ( 
      Receta_receta_id             INTEGER  NOT NULL , 
      tipo_cerveza_id              serial  NOT NULL , 
-     nombre_tipo                  VARCHAR (20)  NOT NULL , 
+     nombre_tipo                  VARCHAR (50)  NOT NULL , 
      descripción_general          text  NOT NULL , 
-     familia                      VARCHAR (20)  NOT NULL , 
+     familia                      VARCHAR (50)  NOT NULL , 
      Proveedor_proveedor_id       INTEGER  NOT NULL , 
      Tipo_Cerveza_tipo_cerveza_id INTEGER 
     ) 
@@ -893,7 +887,7 @@ ALTER TABLE Tipo_Cerveza_Caracteristica
 CREATE TABLE Tipo_Empleado 
     ( 
      tipo_empleado_id               serial  NOT NULL , 
-     nombre_cargo                   VARCHAR (20)  NOT NULL , 
+     nombre_cargo                   VARCHAR (50)  NOT NULL , 
      descripción_cargo              text , 
      Tipo_Empleado_tipo_empleado_id INTEGER 
     ) 
@@ -905,7 +899,7 @@ ALTER TABLE Tipo_Empleado
 CREATE TABLE Tipo_Evento 
     ( 
      tipo_evento_id             serial  NOT NULL , 
-     nombre_tipo_evento         VARCHAR (20)  NOT NULL , 
+     nombre_tipo_evento         VARCHAR (50)  NOT NULL , 
      descripción_evento         text  NOT NULL , 
      Tipo_Evento_tipo_evento_id INTEGER 
     ) 
@@ -918,8 +912,7 @@ CREATE TABLE TipoE_Departamento
     ( 
      Tipo_Empleado_tipo_empleado_id       INTEGER  NOT NULL , 
      Departamento_departamento_id         INTEGER  NOT NULL , 
-     Orden_Reposición_orden_reposición_id INTEGER  NOT NULL , 
-     nombre_departamento                  VARCHAR (20)  NOT NULL , 
+     nombre_departamento                  VARCHAR (50)  NOT NULL , 
      Empleado_empleado_id                 INTEGER  NOT NULL 
     ) 
 ;
@@ -944,10 +937,10 @@ CREATE TABLE Usuario
      Cliente_RIF            INTEGER , 
      Proveedor_proveedor_id INTEGER , 
      usuario_id             serial  NOT NULL , 
-     contraseña_usuario     VARCHAR (20)  NOT NULL , 
+     contraseña_usuario     VARCHAR (50)  NOT NULL , 
      Empleado_empleado_id   INTEGER , 
      Rol_rol_id             INTEGER  NOT NULL , 
-     nombre_usuario         VARCHAR (20)  NOT NULL 
+     nombre_usuario         VARCHAR (50)  NOT NULL 
     ) 
 ;
 ALTER TABLE Usuario 
@@ -981,7 +974,7 @@ ALTER TABLE Vacación
 CREATE TABLE Vacacion_Estatus 
     ( 
      fecha_inicio         DATE  NOT NULL , 
-     fecha_fin            DATE  NOT NULL , 
+     fecha_fin            DATE  , 
      Estatus_estatus_id   INTEGER  NOT NULL , 
      Vacación_vacación_id INTEGER  NOT NULL 
     ) 
@@ -1044,7 +1037,7 @@ ALTER TABLE Venta_Online
 CREATE TABLE VentaF_Estatus 
     ( 
      fecha_inicio                                DATE  NOT NULL , 
-     fecha_fin                                   DATE  NOT NULL , 
+     fecha_fin                                   DATE  , 
      Estatus_estatus_id                          INTEGER  NOT NULL , 
      Venta_Física_Tienda_Física_tienda_fisica_id INTEGER  NOT NULL , 
      Venta_Física_Usuario_usuario_id             INTEGER  NOT NULL 
@@ -1057,7 +1050,7 @@ ALTER TABLE VentaF_Estatus
 CREATE TABLE VentaO_Estatus 
     ( 
      fecha_inicio                                DATE  NOT NULL , 
-     fecha_fin                                   DATE  NOT NULL , 
+     fecha_fin                                   DATE  , 
      Venta_Online_Tienda_Online_tienda_online_id INTEGER  NOT NULL ,  
      Venta_Online_Usuario_usuario_id             INTEGER  NOT NULL , 
      Estatus_estatus_id                          INTEGER  NOT NULL 
@@ -1144,16 +1137,6 @@ ALTER TABLE Cheque
     ) 
 ;
 
-ALTER TABLE Cliente 
-    ADD CONSTRAINT Cliente_Correo_Electrónico_FK FOREIGN KEY 
-    ( 
-     Correo_Electrónico_correo_id
-    ) 
-    REFERENCES Correo_Electrónico 
-    ( 
-     correo_id
-    ) 
-;
 
 ALTER TABLE Cliente_Punto 
     ADD CONSTRAINT Cliente_Punto_Cliente_FK FOREIGN KEY 
@@ -1406,7 +1389,7 @@ ALTER TABLE Detalle_Evento
     ADD CONSTRAINT Detalle_Evento_Tasa_Cambio_FK FOREIGN KEY 
     ( 
      Tasa_Cambio_tasa_cambio_id
-    ) io
+    ) 
     REFERENCES Tasa_Cambio 
     ( 
      tasa_cambio_id
@@ -1657,19 +1640,6 @@ ALTER TABLE Inventario_E_Cerveza_P
     REFERENCES Evento 
     ( 
      evento_id
-    ) 
-;
-
-ALTER TABLE Inventario 
-    ADD CONSTRAINT Inventario_Lugar_Tienda_FK FOREIGN KEY 
-    ( 
-     Lugar_Tienda_tienda_fisica_id,
-     Lugar_Tienda_lugar_tienda_id
-    ) 
-    REFERENCES Lugar_Tienda 
-    ( 
-     Tienda_Física_tienda_fisica_id,
-     lugar_tienda_id
     ) 
 ;
 
@@ -2044,17 +2014,6 @@ ALTER TABLE Proveedor
     ) 
 ;
 
-ALTER TABLE Proveedor 
-    ADD CONSTRAINT Proveedor_Persona_Contacto_FK FOREIGN KEY 
-    ( 
-     Persona_Contacto_contacto_id
-    ) 
-    REFERENCES Persona_Contacto 
-    ( 
-     contacto_id
-    ) 
-;
-
 ALTER TABLE Punto 
     ADD CONSTRAINT Punto_Método_Pago_FK FOREIGN KEY 
     ( 
@@ -2088,16 +2047,6 @@ ALTER TABLE Receta_Ingrediente
     ) 
 ;
 
-ALTER TABLE Receta 
-    ADD CONSTRAINT Receta_Tipo_Cerveza_FK FOREIGN KEY 
-    ( 
-     Tipo_Cerveza_tipo_cerveza_id
-    ) 
-    REFERENCES Tipo_Cerveza 
-    ( 
-     tipo_cerveza_id
-    ) 
-;
 
 ALTER TABLE Rol_Permiso 
     ADD CONSTRAINT Rol_Permiso_Permiso_FK FOREIGN KEY 
@@ -2187,27 +2136,6 @@ ALTER TABLE Tienda_Física
     ) 
 ;
 
-ALTER TABLE Tienda_Física 
-    ADD CONSTRAINT Tienda_Física_Orden_Reposición_FK FOREIGN KEY 
-    ( 
-     Orden_Reposición_orden_reposición_id
-    ) 
-    REFERENCES Orden_Reposición 
-    ( 
-     orden_reposición_id
-    ) 
-;
-
-ALTER TABLE Tienda_Online 
-    ADD CONSTRAINT Tienda_Online_Inventario_FK FOREIGN KEY 
-    ( 
-     Inventario_inventario_id
-    ) 
-    REFERENCES Inventario 
-    ( 
-     inventario_id
-    ) 
-;
 
 ALTER TABLE Tipo_Cerveza_Caracteristica 
     ADD CONSTRAINT Tipo_Cerveza_Caracteristica_Característica_FK FOREIGN KEY 
@@ -2308,17 +2236,7 @@ ALTER TABLE TipoE_Departamento
     ) 
 ;
 
-ALTER TABLE TipoE_Departamento 
-    ADD CONSTRAINT TipoE_Departamento_Orden_Reposición_FK FOREIGN KEY 
-    ( 
-     Orden_Reposición_orden_reposición_id
-    ) 
-    REFERENCES Orden_Reposición 
-    ( 
-     orden_reposición_id
-    ) 
-;
- 
+
 ALTER TABLE TipoE_Departamento 
     ADD CONSTRAINT TipoE_Departamento_Tipo_Empleado_FK FOREIGN KEY 
     ( 
