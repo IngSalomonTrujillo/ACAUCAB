@@ -1,0 +1,227 @@
+------------------------------------------------------------------------------------------------------
+
+--1. Trigger para Actualizar Inventario
+CREATE OR REPLACE FUNCTION actualizar_inventario()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Reducir la cantidad en el inventario después de una venta
+    UPDATE Inventario_E_Cerveza_P
+    SET cantidad = cantidad - NEW.cantidad
+    WHERE Cerveza_Presentacion_Cerveza_cerveza_id = NEW.Cerveza_Presentacion_Cerveza_cerveza_id
+      AND Cerveza_Presentacion_Presentación_presentación_id = NEW.Cerveza_Presentacion_Presentación_presentación_id
+      AND Evento_evento_id = NEW.Evento_evento_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_actualizar_inventario
+AFTER INSERT OR UPDATE ON Venta_Física
+FOR EACH ROW EXECUTE FUNCTION actualizar_inventario();
+
+CREATE TRIGGER trigger_actualizar_inventario_online
+AFTER INSERT OR UPDATE ON Venta_Online
+FOR EACH ROW EXECUTE FUNCTION actualizar_inventario();
+
+------------------------------------------------------------------------------------------------------
+
+--2. Trigger para Controlar Puntos de Cliente
+CREATE OR REPLACE FUNCTION actualizar_puntos_cliente()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Aumentar los puntos del cliente basado en el monto pagado
+    UPDATE Cliente_Punto
+    SET cantidad_puntos = cantidad_puntos + (NEW.monto_pagado / 100)  -- Ejemplo: 1 punto por cada 100 Bs
+    WHERE Cliente_RIF = NEW.Cliente_RIF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_actualizar_puntos
+AFTER INSERT ON Pago_Fisica
+FOR EACH ROW EXECUTE FUNCTION actualizar_puntos_cliente();
+
+CREATE TRIGGER trigger_actualizar_puntos_online
+AFTER INSERT ON Pago_Online
+FOR EACH ROW EXECUTE FUNCTION actualizar_puntos_cliente();
+------------------------------------------------------------------------------------------------------
+
+-- 3. Trigger para Validar Stock en Compras
+CREATE OR REPLACE FUNCTION validar_stock_compra()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificar que haya suficiente stock antes de permitir la compra
+    IF (SELECT cantidad FROM Inventario_E_Cerveza_P
+        WHERE Cerveza_Presentacion_Cerveza_cerveza_id = NEW.Cerveza_Presentacion_Cerveza_cerveza_id
+          AND Cerveza_Presentacion_Presentación_presentación_id = NEW.Cerveza_Presentacion_Presentación_presentación_id) < NEW.cantidad THEN
+        RAISE EXCEPTION 'No hay suficiente stock para la compra';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_validar_stock
+BEFORE INSERT ON Detalle_Compra
+FOR EACH ROW EXECUTE FUNCTION validar_stock_compra();
+------------------------------------------------------------------------------------------------------
+
+--4. Trigger para Actualizar Estatus de Compra
+CREATE OR REPLACE FUNCTION actualizar_estatus_compra()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Establecer el estatus de la compra a "Pendiente" al crear una nueva compra
+    INSERT INTO Compra_Estatus (fecha_inicio, Estatus_estatus_id, Compra_proveedor_id, Compra_compra_id)
+    VALUES (CURRENT_DATE, 1, NEW.Proveedor_proveedor_id, NEW.compra_id);  -- 1 es el ID de "Pendiente"
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_actualizar_estatus_compra
+AFTER INSERT ON Compra
+FOR EACH ROW EXECUTE FUNCTION actualizar_estatus_compra();
+------------------------------------------------------------------------------------------------------
+--5. Trigger para Registro de Asistencia
+CREATE OR REPLACE FUNCTION verificar_asistencia_tarde()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificar si la hora de entrada registrada es posterior a la hora de entrada esperada
+    IF NEW.hora_entrada_registrada > (SELECT hora_entrada_esperada FROM Horario WHERE dias_semana = TO_CHAR(NEW.fecha, 'Day')) THEN
+        RAISE NOTICE 'El empleado % llegó tarde', NEW.Empleado_empleado_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_verificar_asistencia
+AFTER INSERT ON Asistencia
+FOR EACH ROW EXECUTE FUNCTION verificar_asistencia_tarde();
+------------------------------------------------------------------------------------------------------
+
+--6. Validar Fechas
+CREATE OR REPLACE FUNCTION check_fechas_validas()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Si fecha_fin no es NULL y es menor que fecha_inicio, lanzar un error
+    IF NEW.fecha_fin IS NOT NULL AND NEW.fecha_fin < NEW.fecha_inicio THEN
+        RAISE EXCEPTION 'La fecha final (%) no puede ser menor que la fecha inicial (%)', NEW.fecha_fin, NEW.fecha_inicio;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+--6.1. Trigger para Compra_Estatus
+CREATE TRIGGER trg_check_compra_estatus_fechas
+BEFORE INSERT OR UPDATE ON Compra_Estatus
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+--6.2. Trigger para Evento
+CREATE TRIGGER trg_check_evento_fechas
+BEFORE INSERT OR UPDATE ON Evento
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+
+--6.3. Trigger para OrdenR_Estatus
+CREATE TRIGGER trg_check_ordenr_estatus_fechas
+BEFORE INSERT OR UPDATE ON OrdenR_Estatus
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+
+--6.4. Trigger para Permiso
+CREATE TRIGGER trg_check_permiso_fechas
+BEFORE INSERT OR UPDATE ON Permiso
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+
+--6.5. Trigger para Vacación
+CREATE TRIGGER trg_check_vacacion_fechas
+BEFORE INSERT OR UPDATE ON Vacación
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+
+--6.6. Trigger para Vacacion_Estatus
+CREATE TRIGGER trg_check_vacacion_estatus_fechas
+BEFORE INSERT OR UPDATE ON Vacacion_Estatus
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+--6.7. Trigger para VentaF_Estatus
+CREATE TRIGGER trg_check_ventaf_estatus_fechas
+BEFORE INSERT OR UPDATE ON VentaF_Estatus
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+--6.8. Trigger para VentaO_Estatus
+CREATE TRIGGER trg_check_ventao_estatus_fechas
+BEFORE INSERT OR UPDATE ON VentaO_Estatus
+FOR EACH ROW EXECUTE FUNCTION check_fechas_validas();
+------------------------------------------------------------------------------------------------------
+ --7. Trigger para Aviso de Orden de Reposición
+-- Función para el trigger de orden de reposición
+CREATE OR REPLACE FUNCTION generar_orden_reposicion_aviso()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_proveedor_id INTEGER;
+    v_tipo_empleado_id INTEGER := 3; -- ID del Tipo_Empleado (Gerente de Compras)
+    v_departamento_id INTEGER := 13; -- ID del Departamento (Compras)
+    v_empleado_id INTEGER := 3;     -- ID del Empleado (Pedro Gómez, Gerente de Compras)
+    v_tienda_fisica_id INTEGER;
+BEGIN
+    -- Solo actuar si la cantidad actual es <= 100 y la cantidad anterior era > 100
+    -- Esto evita generar múltiples órdenes si la cantidad se mantiene por debajo de 100
+    IF NEW.cantidad_presentaciones <= 100 AND OLD.cantidad_presentaciones > 100 THEN
+        -- Obtener el proveedor_id asociado a esta cerveza y presentación
+        SELECT tc.Proveedor_proveedor_id
+        INTO v_proveedor_id
+        FROM Cerveza_Presentacion cp
+        JOIN Cerveza c ON cp.Cerveza_cerveza_id = c.cerveza_id
+        JOIN Tipo_Cerveza tc ON c.Tipo_Cerveza_tipo_cerveza_id = tc.tipo_cerveza_id
+        WHERE cp.Cerveza_cerveza_id = NEW.Cerveza_Presentacion_Cerveza_cerveza_id
+          AND cp.Presentación_presentación_id = NEW.Cerveza_Presentacion_Presentación_presentación_id;
+
+        -- Determinar la tienda física asociada al inventario (si aplica)
+        -- Si el inventario es de una tienda online, no se genera orden de reposición para tienda física
+        -- Si el inventario es físico (Tienda_Online_tienda_online_id IS NULL), asumimos que es para una tienda física
+        -- Para este ejemplo, asumiremos que el inventario físico (Tienda_Online_tienda_online_id IS NULL)
+        -- corresponde a la tienda física con ID 1 (ACAUCAB Principal) o se puede buscar dinámicamente.
+        -- Si NEW.Tienda_Online_tienda_online_id IS NULL, significa que es inventario físico.
+        -- En un sistema real, Inventario debería tener una FK a Tienda_Física o Lugar_Tienda.
+        -- Para este ejemplo, si es inventario físico, asignamos a la tienda_fisica_id 1.
+        IF NEW.Tienda_Online_tienda_online_id IS NULL THEN
+            -- Buscar la tienda física que maneja este inventario físico.
+            -- Esto es una simplificación. En un diseño más robusto, Inventario debería tener una FK a Tienda_Física.
+            -- Por ahora, si es inventario físico, lo asociamos a la primera tienda física.
+            SELECT tienda_fisica_id INTO v_tienda_fisica_id FROM Tienda_Física LIMIT 1;
+        ELSE
+            -- Si es inventario de tienda online, no generamos orden de reposición física con esta lógica.
+            -- Podrías RAISE NOTICE o simplemente RETURN NEW si no aplica.
+            RETURN NEW;
+        END IF;
+
+        -- Insertar la nueva orden de reposición
+        INSERT INTO Orden_Reposición (
+            Tienda_Física_tienda_fisica_id,
+            fecha_hora_generación,
+            cantidad_a_reponer,
+            TipoE_Departamento_tipo_empleado_id,
+            TipoE_Departamento_departamento_id,
+            TipoE_Departamento_empleado_id
+        ) VALUES (
+            v_tienda_fisica_id,
+            NOW(), -- Fecha y hora actual
+            10000, -- Cantidad a reponer según el PDF
+            v_tipo_empleado_id,
+            v_departamento_id,
+            v_empleado_id
+        );
+
+        RAISE NOTICE 'Orden de reposición generada para cerveza_id % y presentación_id % del proveedor %',
+                     NEW.Cerveza_Presentacion_Cerveza_cerveza_id,
+                     NEW.Cerveza_Presentacion_Presentación_presentación_id,
+                     v_proveedor_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger que se activa después de actualizar la cantidad en Inventario
+CREATE TRIGGER trg_aviso_orden_reposicion
+AFTER UPDATE ON Inventario
+FOR EACH ROW EXECUTE FUNCTION generar_orden_reposicion_aviso();
+------------------------------------------------------------------------------------------------------
+
