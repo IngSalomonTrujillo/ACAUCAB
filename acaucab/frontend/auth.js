@@ -24,7 +24,7 @@ class AuthSystem {
         if (response.ok) {
           const result = await response.json();
           if (result.success) {
-            if (window.location.pathname.includes("login.html") || window.location.pathname.includes("register.html")) {
+          if (window.location.pathname.includes("login.html") || window.location.pathname.includes("register.html")) {
               window.location.href = "admin.html";
             }
           } else {
@@ -98,24 +98,24 @@ class AuthSystem {
       if (response.ok && result.success) {
         this.currentUser = result.user;
 
-        // Almacenar sesión
-        if (remember) {
+      // Almacenar sesión
+      if (remember) {
           localStorage.setItem("acaucab_current_user", JSON.stringify(result.user));
-        } else {
+      } else {
           sessionStorage.setItem("acaucab_current_user", JSON.stringify(result.user));
-        }
+      }
 
         this.showNotification(`¡Bienvenido ${result.user.fullName}!`, "success");
 
         // Redirigir según el rol
-        setTimeout(() => {
+      setTimeout(() => {
           if (result.user.role.name === 'Administrador' || result.user.role.name === 'Supervisor') {
-            window.location.href = "admin.html";
+        window.location.href = "admin.html";
           } else {
             window.location.href = "products.html";
           }
-        }, 1500);
-      } else {
+      }, 1500);
+    } else {
         this.showNotification(result.error || "Credenciales incorrectas", "error");
       }
     } catch (error) {
@@ -164,22 +164,22 @@ class AuthSystem {
     }, 1500);
   }
 
-  handleLogout(e) {
-    e.preventDefault();
+handleLogout(e) {
+  e.preventDefault();
     this.logout();
   }
 
   logout() {
     this.currentUser = null;
-    localStorage.removeItem("acaucab_current_user");
-    sessionStorage.removeItem("acaucab_current_user");
-    
+  localStorage.removeItem("acaucab_current_user");
+  sessionStorage.removeItem("acaucab_current_user");
+
     this.showNotification("Sesión cerrada", "info");
-    
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1000);
-  }
+
+  setTimeout(() => {
+    window.location.href = "login.html";
+  }, 1000);
+}
 
   togglePassword(e) {
     e.preventDefault();
@@ -235,7 +235,7 @@ class AuthSystem {
   // Verificar si el usuario puede acceder a una sección
   canAccess(section) {
     if (!this.currentUser) return false;
-    
+
     switch (section) {
       case 'admin':
         return this.hasRole('Administrador') || this.hasRole('Supervisor');

@@ -3,30 +3,30 @@ const dashboardPanel = {
     currentUser: null,
     currentSection: 'resumen',
 
-    init() {
+  init() {
         this.checkAuth();
         this.bindEvents();
         this.loadUserData();
         this.loadStats();
     },
 
-    checkAuth() {
+  checkAuth() {
         const userData = localStorage.getItem('acaucab_user') || sessionStorage.getItem('acaucab_user');
-        
-        if (!userData) {
+
+    if (!userData) {
             window.location.href = 'login.html';
             return;
-        }
+    }
 
         try {
             this.currentUser = JSON.parse(userData);
         } catch (error) {
             console.error('Error parsing user data:', error);
             window.location.href = 'login.html';
-        }
+  }
     },
 
-    bindEvents() {
+  bindEvents() {
         // Menu navigation
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -47,11 +47,11 @@ const dashboardPanel = {
         });
     },
 
-    loadUserData() {
+  loadUserData() {
         if (!this.currentUser) return;
 
         const userName = this.currentUser.type === 'natural' 
-            ? `${this.currentUser.nombres} ${this.currentUser.apellidos}`
+        ? `${this.currentUser.nombres} ${this.currentUser.apellidos}`
             : this.currentUser.denominacionComercial;
 
         // Update user info in header
@@ -156,7 +156,7 @@ const dashboardPanel = {
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
         }, 3000);
-    }
+  }
 };
 
 // Initialize dashboard when DOM is loaded

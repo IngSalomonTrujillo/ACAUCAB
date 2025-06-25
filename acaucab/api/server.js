@@ -1,12 +1,16 @@
 import pool from "./connectionPostgreSQL.js";
 import express from 'express';
 import cors from 'cors';
+import { setupInventarioEndpoints } from './fixed-inventario-endpoint.js';
 
 const app = express();
 const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Configurar endpoints de inventario
+setupInventarioEndpoints(app, pool);
 
 // Función para verificar si una tabla existe
 async function tableExists(tableName) {
@@ -874,7 +878,7 @@ app.get('/api/cervezas', async (req, res) => {
                 COALESCE(p.nombre_presentación, 'Sin presentación') as presentacion
             FROM Cerveza c
             LEFT JOIN Tipo_Cerveza tc ON c.Tipo_Cerveza_tipo_cerveza_id = tc.tipo_cerveza_id
-            LEFT JOIN Presentación p ON c.presentación_id = p.presentación_id
+            LEFT JOIN Presentación p ON c.presentación_id = p.presentacion_id
             ORDER BY c.nombre_cerveza
         `);
         
@@ -888,6 +892,337 @@ app.get('/api/cervezas', async (req, res) => {
 // Ruta de prueba
 app.get('/', (req, res) => {
     res.json({ message: 'API de ACAUCAB funcionando correctamente' });
+});
+
+// Endpoint para inventario de tienda física (funcional con estructura real)
+app.get('/api/inventario/tienda-fisica', async (req, res) => {
+    try {
+        // Consulta mejorada que incluye datos de cerveza, tipo y presentación
+        const result = await pool.query(`
+            SELECT 
+                tf.tienda_fisica_id,
+                tf.nombre_ubicación as nombre_tienda,
+                lt.lugar_tienda_id,
+                lt.nombre_lugar_tienda,
+                lt.tipo_lugar_tienda,
+                i.inventario_id,
+                i.cantidad_presentaciones as cantidad,
+                c.cerveza_id,
+                c.nombre_cerveza,
+                c.descripción as descripcion_cerveza,
+                tc.nombre_tipo as tipo_cerveza,
+                p.presentación_id,
+                p.nombre_presentación
+            FROM lugar_tienda lt
+            INNER JOIN tienda_física tf ON lt.tienda_física_tienda_fisica_id = tf.tienda_fisica_id
+            INNER JOIN inventario i ON lt.inventario_inventario_id = i.inventario_id
+            INNER JOIN cerveza_presentacion cp ON i.cerveza_presentacion_cerveza_cerveza_id = cp.cerveza_cerveza_id 
+                AND i.cerveza_presentacion_presentación_presentación_id = cp.presentación_presentación_id
+            INNER JOIN cerveza c ON cp.cerveza_cerveza_id = c.cerveza_id
+            INNER JOIN presentación p ON cp.presentación_presentación_id = p.presentación_id
+            LEFT JOIN tipo_cerveza tc ON c.tipo_cerveza_tipo_cerveza_id = tc.tipo_cerveza_id
+            ORDER BY tf.nombre_ubicación, lt.nombre_lugar_tienda, c.nombre_cerveza
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('❌ Error obteniendo inventario:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor',
+            details: error.message
+        });
+    }
+});
+
+// ENDPOINT: Obtener todos los clientes
+app.get('/api/clientes', async (req, res) => {
+    try {
+        if (!(await tableExists('cliente'))) {
+            return res.json([]);
+        }
+        // Intentar traer también el correo si existe
+        let correoJoin = '';
+        let correoSelect = '';
+        if (await tableExists('correo_electrónico')) {
+            correoJoin = 'LEFT JOIN correo_electrónico ce ON ce.cliente_rif = c.rif';
+            correoSelect = ', ce.prefijo_correo, ce.dominio_correo';
+        }
+        // Verificar existencia de tablas hijas
+        const tieneNatural = await tableExists('personanatural');
+        const tieneJuridico = await tableExists('jurídico');
+        let joinNatural = '', joinJuridico = '', selectNatural = '', selectJuridico = '';
+        if (tieneNatural) {
+            joinNatural = 'LEFT JOIN personanatural pn ON c.rif = pn.rif';
+            selectNatural = ', pn.primer_nombre AS nombre_natural, pn.primer_apellido AS apellido_natural, pn.cedula_identidad AS cedula_natural';
+        }
+        if (tieneJuridico) {
+            joinJuridico = 'LEFT JOIN jurídico j ON c.rif = j.rif';
+            selectJuridico = ', j.razón_social AS nombre_juridico';
+        }
+        const sql = `
+            SELECT c.rif, c.tipo_cliente, c.número_carnet${correoSelect}${selectNatural}${selectJuridico}
+            FROM cliente c
+            ${joinNatural}
+            ${joinJuridico}
+            ${correoJoin}
+            ORDER BY c.rif
+        `;
+        console.log('SQL CLIENTES:', sql);
+        const result = await pool.query(sql);
+        // Unificar datos según tipo_cliente
+        const clientes = result.rows.map(row => {
+            let nombre = '', apellido = '', telefono = '';
+            if (row.tipo_cliente === 'Natural') {
+                nombre = row.nombre_natural || '';
+                apellido = row.apellido_natural || '';
+                telefono = row.cedula_natural || '';
+            } else if (row.tipo_cliente === 'Jurídico') {
+                nombre = row.nombre_juridico || '';
+                apellido = '';
+                telefono = '';
+            }
+            return {
+                rif: row.rif,
+                tipo_cliente: row.tipo_cliente,
+                numero_carnet: row.número_carnet,
+                correo: row.prefijo_correo && row.dominio_correo ? `${row.prefijo_correo}@${row.dominio_correo}` : null,
+                nombre,
+                apellido,
+                telefono
+            };
+        });
+        res.json(clientes);
+    } catch (error) {
+        console.error('Error obteniendo clientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor', details: error.message });
+    }
+});
+
+// ENDPOINT: Obtener puntos de un cliente
+app.get('/api/clientes/:rif/puntos', async (req, res) => {
+    try {
+        const { rif } = req.params;
+        if (!(await tableExists('cliente_punto'))) {
+            return res.json({ puntos: 0 });
+        }
+        const result = await pool.query(`
+            SELECT SUM(cantidad_puntos) as puntos
+            FROM cliente_punto
+            WHERE cliente_rif = $1
+        `, [rif]);
+        res.json({ puntos: parseInt(result.rows[0].puntos) || 0 });
+    } catch (error) {
+        console.error('Error obteniendo puntos del cliente:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// ENDPOINT: Métodos de pago agrupados y detallados
+app.get('/api/metodos-pago', async (req, res) => {
+    const metodos = [];
+    // Efectivo
+    try {
+        const result = await pool.query('SELECT método_pago_id, tipo_divisa FROM "Efectivo"');
+        result.rows.forEach(row => {
+            metodos.push({
+                id: row.método_pago_id,
+                tipo: 'Efectivo',
+                detalles: { divisa: row.tipo_divisa }
+            });
+        });
+    } catch (e) {}
+    // Débito
+    try {
+        const result = await pool.query('SELECT método_pago_id, cuenta, banco, número_tarjeta FROM "Débito"');
+        result.rows.forEach(row => {
+            metodos.push({
+                id: row.método_pago_id,
+                tipo: 'Débito',
+                detalles: { banco: row.banco, cuenta: row.cuenta, numero_tarjeta: row.número_tarjeta }
+            });
+        });
+    } catch (e) {}
+    // Crédito
+    try {
+        const result = await pool.query('SELECT método_pago_id, cuenta, banco, número_tarjeta FROM "Crédito"');
+        result.rows.forEach(row => {
+            metodos.push({
+                id: row.método_pago_id,
+                tipo: 'Crédito',
+                detalles: { banco: row.banco, cuenta: row.cuenta, numero_tarjeta: row.número_tarjeta }
+            });
+        });
+    } catch (e) {}
+    // Cheque
+    try {
+        const result = await pool.query('SELECT método_pago_id, número_cuenta, banco, número_cheque FROM "Cheque"');
+        result.rows.forEach(row => {
+            metodos.push({
+                id: row.método_pago_id,
+                tipo: 'Cheque',
+                detalles: { banco: row.banco, numero_cuenta: row.número_cuenta, numero_cheque: row.número_cheque }
+            });
+        });
+    } catch (e) {}
+    // Punto
+    try {
+        const result = await pool.query('SELECT método_pago_id FROM "Punto"');
+        result.rows.forEach(row => {
+            metodos.push({
+                id: row.método_pago_id,
+                tipo: 'Punto',
+                detalles: { descripcion: 'Puntos de fidelidad' }
+            });
+        });
+    } catch (e) {}
+    // Agrupar por tipo para el frontend
+    const agrupados = {};
+    metodos.forEach(m => {
+        if (!agrupados[m.tipo]) agrupados[m.tipo] = [];
+        agrupados[m.tipo].push(m);
+    });
+    res.json(agrupados);
+});
+
+// ENDPOINT: Tasa de cambio más reciente (USD y EUR)
+app.get('/api/tasa-cambio', async (req, res) => {
+    try {
+        if (!(await tableExists('tasa_cambio'))) {
+            return res.json([]);
+        }
+        // Traer la tasa más reciente por moneda
+        const result = await pool.query(`
+            SELECT DISTINCT ON (moneda_origen) moneda_origen, tasa, fecha_vigencia
+            FROM tasa_cambio
+            ORDER BY moneda_origen, fecha_vigencia DESC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error obteniendo tasa de cambio:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// ENDPOINT: Registrar una compra física (realizar compra)
+app.post('/api/compras/realizar', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const {
+            clienteRif,
+            carrito, // [{ id, quantity, price, cerveza_id, presentacion_id }]
+            metodosPago, // [{ tipo, monto, detalles }]
+            puntosUsados,
+            tasaCambioId, // id de la tasa usada
+            subtotal,
+            iva,
+            total
+        } = req.body;
+
+        console.log('--- [VENTA] ---');
+        console.log('Datos recibidos:', JSON.stringify(req.body, null, 2));
+
+        if (!clienteRif || !Array.isArray(carrito) || carrito.length === 0 || !Array.isArray(metodosPago) || metodosPago.length === 0) {
+            console.log('❌ Datos incompletos para la venta:', req.body);
+            return res.status(400).json({ error: 'Datos incompletos para la venta', body: req.body });
+        }
+
+        await client.query('BEGIN');
+
+        // 1. Buscar el usuario asociado al cliente
+        let usuarioId;
+        try {
+            const usuarioResult = await client.query(`
+                SELECT u.usuario_id 
+                FROM usuario u
+                LEFT JOIN personanatural pn ON u.Cliente_RIF = pn.rif
+                LEFT JOIN jurídico j ON u.Cliente_RIF = j.rif
+                WHERE pn.rif = $1 OR j.rif = $1
+            `, [clienteRif]);
+            
+            if (usuarioResult.rows.length > 0) {
+                usuarioId = usuarioResult.rows[0].usuario_id;
+                console.log('Usuario encontrado para clienteRif:', clienteRif, '-> usuarioId:', usuarioId);
+            } else {
+                usuarioId = 1;
+                console.log(`⚠️ No se encontró usuario para cliente RIF ${clienteRif}, usando usuario por defecto (ID: 1)`);
+            }
+        } catch (error) {
+            usuarioId = 1;
+            console.log(`⚠️ Error buscando usuario para cliente RIF ${clienteRif}, usando usuario por defecto (ID: 1)`, error.message);
+        }
+
+        // 2. Insertar en venta_física
+        const tiendaFisicaId = 1; // Simulado, deberías obtenerlo del contexto
+        const fechaVenta = new Date();
+        let resultVenta;
+        try {
+            resultVenta = await client.query(`
+                INSERT INTO venta_física (fecha_hora_venta, monto_total, tienda_física_tienda_fisica_id, usuario_usuario_id)
+                VALUES ($1, $2, $3, $4)
+                RETURNING tienda_física_tienda_fisica_id, usuario_usuario_id
+            `, [fechaVenta, total, tiendaFisicaId, usuarioId]);
+        } catch (err) {
+            console.error('❌ Error insertando venta_física:', err.message);
+            await client.query('ROLLBACK');
+            return res.status(500).json({ error: 'Error insertando venta_física', details: err.message });
+        }
+        const ventaFisicaId = resultVenta.rows[0].tienda_física_tienda_fisica_id;
+        const ventaUsuarioId = resultVenta.rows[0].usuario_usuario_id;
+
+        // 3. Insertar detalles de la venta
+        for (const item of carrito) {
+            try {
+                await client.query(`
+                    INSERT INTO detalle_física (precio_unitario, cantidad, venta_física_tienda_fisica_id, venta_física_usuario_id, inventario_inventario_id, tasa_cambio_tasa_cambio_id)
+                    VALUES ($1, $2, $3, $4, $5, $6)
+                `, [
+                    item.price,
+                    item.quantity,
+                    ventaFisicaId,
+                    ventaUsuarioId,
+                    item.id, // inventario_id
+                    1 // tasa_cambio_tasa_cambio_id (valor por defecto)
+                ]);
+                console.log('Detalle insertado:', item);
+            } catch (err) {
+                console.error('❌ Error insertando detalle_física:', err.message, 'Item:', item);
+                await client.query('ROLLBACK');
+                return res.status(500).json({ error: 'Error insertando detalle_física', details: err.message, item });
+            }
+        }
+
+        // 4. Insertar pagos (si la tabla existe)
+        try {
+            const fechaPago = new Date();
+            for (const pago of metodosPago) {
+                let metodoPagoId = 1; // Simulado
+                await client.query(`
+                    INSERT INTO pago_fisica (fecha_pago, monto_pagado, referencia_pago, venta_física_tienda_fisica_id, venta_física_usuario_id, método_pago_método_pago_id, puntos_usuados)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                `, [
+                    fechaPago,
+                    pago.monto,
+                    'REF-' + Math.floor(Math.random() * 1000000),
+                    ventaFisicaId,
+                    ventaUsuarioId,
+                    metodoPagoId,
+                    pago.tipo === 'Punto' ? pago.monto : 0
+                ]);
+                console.log('Pago insertado:', pago);
+            }
+        } catch (pagoError) {
+            console.log('⚠️ Tabla pago_fisica no existe, omitiendo pagos:', pagoError.message);
+        }
+
+        await client.query('COMMIT');
+        console.log('✅ Venta registrada correctamente');
+        res.json({ success: true, ventaFisicaId, usuarioId });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('❌ Error registrando venta física:', error);
+        res.status(500).json({ error: 'Error interno al registrar la venta física', details: error.message });
+    } finally {
+        client.release();
+    }
 });
 
 app.listen(port, () => {

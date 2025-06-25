@@ -2,30 +2,40 @@ import pool from "./connectionPostgreSQL.js";
 
 async function checkTables() {
     try {
-        console.log('�� Verificando tablas existentes en la base de datos...');
+        console.log('🔍 Verificando tablas en la base de datos ACAUCAB...');
         
         const result = await pool.query(`
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = 'public' 
+            AND table_type = 'BASE TABLE'
             ORDER BY table_name
         `);
         
-        console.log('\n📋 Tablas encontradas:');
+        console.log('✅ Tablas encontradas:');
         result.rows.forEach(row => {
-            console.log(`- ${row.table_name}`);
+            console.log(`  - ${row.table_name}`);
         });
         
-        // Verificar el contenido de cada tabla
-        console.log('\n📊 Contenido de las tablas:');
-        for (const row of result.rows) {
-            const tableName = row.table_name;
-            const countResult = await pool.query(`SELECT COUNT(*) as count FROM "${tableName}"`);
-            console.log(`📋 ${tableName}: ${countResult.rows[0].count} registros`);
+        // Verificar tablas específicas que necesitamos
+        const tablasNecesarias = [
+            'Inventario',
+            'Lugar_Tienda', 
+            'Tienda_Física',
+            'Cerveza',
+            'Presentación',
+            'Cerveza_Presentacion',
+            'Tipo_Cerveza'
+        ];
+        
+        console.log('\n🔍 Verificando tablas necesarias para inventario:');
+        for (const tabla of tablasNecesarias) {
+            const existe = result.rows.some(row => row.table_name.toLowerCase() === tabla.toLowerCase());
+            console.log(`  ${existe ? '✅' : '❌'} ${tabla}`);
         }
         
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('❌ Error verificando tablas:', error.message);
     } finally {
         await pool.end();
     }

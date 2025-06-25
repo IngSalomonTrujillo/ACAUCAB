@@ -11,7 +11,6 @@ class ProductsSystem {
 
   init() {
     this.checkAuth()
-    this.initializeProducts()
     this.bindEvents()
     this.loadProducts()
     this.updateCartUI()
@@ -47,7 +46,6 @@ class ProductsSystem {
         name: "Destilo Amber Ale",
         category: "ale",
         price: 25.99,
-        image: "/placeholder.svg?height=300&width=250",
         description:
           "Primera cerveza genuina ultra Premium tipo Ale hecha en Venezuela. Con un sabor único y balanceado.",
         rating: 4.8,
@@ -61,7 +59,6 @@ class ProductsSystem {
         name: "Benitz Pale Ale",
         category: "ale",
         price: 22.5,
-        image: "/placeholder.svg?height=300&width=250",
         description: "Balance perfecto entre el sabor dulce de las maltas y el suave amargor del lúpulo.",
         rating: 4.6,
         reviews: 89,
@@ -74,7 +71,6 @@ class ProductsSystem {
         name: "Mito Candileja",
         category: "ale",
         price: 28.75,
-        image: "/placeholder.svg?height=300&width=250",
         description: "Inspirada en técnicas monásticas, con intenso aroma a caramelo y frutas.",
         rating: 4.9,
         reviews: 156,
@@ -87,7 +83,6 @@ class ProductsSystem {
         name: "Caracas Lager",
         category: "lager",
         price: 18.99,
-        image: "/placeholder.svg?height=300&width=250",
         description: "Cerveza ligera y refrescante, perfecta para el clima tropical venezolano.",
         rating: 4.3,
         reviews: 203,
@@ -100,7 +95,6 @@ class ProductsSystem {
         name: "Maracaibo Stout",
         category: "stout",
         price: 32.0,
-        image: "/placeholder.svg?height=300&width=250",
         description: "Cerveza oscura con notas de chocolate y café, inspirada en el cacao venezolano.",
         rating: 4.7,
         reviews: 78,
@@ -113,7 +107,6 @@ class ProductsSystem {
         name: "Valencia IPA",
         category: "ipa",
         price: 29.99,
-        image: "/placeholder.svg?height=300&width=250",
         description: "India Pale Ale con lúpulos tropicales y un amargor pronunciado.",
         rating: 4.5,
         reviews: 112,
@@ -126,7 +119,6 @@ class ProductsSystem {
         name: "Andes Golden",
         category: "lager",
         price: 21.25,
-        image: "/placeholder.svg?height=300&width=250",
         description: "Lager dorada con maltas especiales y un acabado suave y limpio.",
         rating: 4.4,
         reviews: 167,
@@ -139,7 +131,6 @@ class ProductsSystem {
         name: "Orinoco Porter",
         category: "stout",
         price: 26.5,
-        image: "/placeholder.svg?height=300&width=250",
         description: "Porter robusta con sabores tostados y un final ligeramente dulce.",
         rating: 4.6,
         reviews: 94,
@@ -205,31 +196,49 @@ class ProductsSystem {
     })
   }
 
-  loadProducts() {
-    const productsGrid = document.getElementById("productsGrid")
-    if (!productsGrid) return
-
-    productsGrid.innerHTML = ""
-
-    this.products.forEach((product) => {
-      const productCard = this.createProductCard(product)
-      productsGrid.appendChild(productCard)
-    })
+  async loadProducts() {
+    try {
+      const response = await fetch('http://localhost:3000/api/inventario/tienda-fisica');
+      if (!response.ok) throw new Error('No se pudo cargar el inventario');
+      const data = await response.json();
+      console.log('Datos recibidos del backend:', data); // Para debug
+      this.products = data.map(item => ({
+        id: item.inventario_id,
+        name: item.nombre_cerveza || 'Producto sin nombre',
+        type: item.tipo_cerveza || 'Sin tipo',
+        presentation: item.nombre_presentacion || 'Sin presentación',
+        quantity: item.cantidad || 0,
+        place: item.nombre_lugar_tienda || 'Sin ubicación',
+        placeType: item.tipo_lugar_tienda || 'Sin tipo',
+        store: item.nombre_ubicación || 'Sin tienda',
+        descripcion: item.descripcion_cerveza || '',
+        cerveza_id: item.cerveza_id,
+        presentacion_id: item.presentacion_id,
+        // Campos adicionales que necesita el frontend
+        price: item.precio !== undefined && item.precio !== null ? parseFloat(item.precio) : 0,
+        image: "/placeholder.svg?height=300&width=250",
+        badge: "Disponible",
+        category: item.tipo_cerveza || "cerveza",
+        rating: 4.5,
+        reviews: 50,
+        alcohol: "5.0%",
+        ibu: 25,
+        description: item.descripcion_cerveza || "Cerveza artesanal de calidad premium"
+      }));
+      console.log('Productos mapeados:', this.products); // Para debug
+      this.displayProducts(this.products);
+    } catch (error) {
+      console.error('Error cargando productos:', error);
+      this.products = [];
+      this.displayProducts([]);
+    }
   }
 
   createProductCard(product) {
     const isFavorite = this.favorites.includes(product.id)
-
     const card = document.createElement("div")
     card.className = "product-card"
     card.innerHTML = `
-            <div class="product-image">
-                <img src="${product.image}" alt="${product.name}">
-                <div class="product-badge">${product.badge}</div>
-                <button class="favorite-btn ${isFavorite ? "active" : ""}" data-id="${product.id}">
-                    <i class="fas fa-heart"></i>
-                </button>
-            </div>
             <div class="product-info">
                 <div class="product-category">${product.category.toUpperCase()}</div>
                 <h3 class="product-name">${product.name}</h3>
@@ -248,24 +257,10 @@ class ProductsSystem {
                 </div>
             </div>
         `
-
-    // Add event listeners
-    card.addEventListener("click", (e) => {
-      if (!e.target.closest(".favorite-btn") && !e.target.closest(".add-to-cart")) {
-        this.showProductModal(product)
-      }
-    })
-
-    card.querySelector(".favorite-btn").addEventListener("click", (e) => {
-      e.stopPropagation()
-      this.toggleFavorite(product.id)
-    })
-
     card.querySelector(".add-to-cart").addEventListener("click", (e) => {
       e.stopPropagation()
       this.addToCart(product.id)
     })
-
     return card
   }
 
@@ -293,14 +288,9 @@ class ProductsSystem {
   showProductModal(product) {
     const modal = document.getElementById("productModal")
     const modalBody = document.getElementById("modalBody")
-
     if (!modal || !modalBody) return
-
     modalBody.innerHTML = `
             <div class="product-modal-content">
-                <div class="modal-image">
-                    <img src="${product.image}" alt="${product.name}">
-                </div>
                 <div class="modal-info">
                     <div class="product-category">${product.category.toUpperCase()}</div>
                     <h2>${product.name}</h2>
@@ -327,7 +317,6 @@ class ProductsSystem {
                 </div>
             </div>
         `
-
     modal.style.display = "block"
   }
 
@@ -385,15 +374,12 @@ class ProductsSystem {
     const cartCount = document.getElementById("cartCount")
     const cartItems = document.getElementById("cartItems")
     const cartTotal = document.getElementById("cartTotal")
-
     if (cartCount) {
       const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0)
       cartCount.textContent = totalItems
     }
-
     if (cartItems) {
       cartItems.innerHTML = ""
-
       if (this.cart.length === 0) {
         cartItems.innerHTML =
           '<p style="text-align: center; color: var(--gray-color); padding: 2rem;">Tu carrito está vacío</p>'
@@ -402,9 +388,6 @@ class ProductsSystem {
           const cartItem = document.createElement("div")
           cartItem.className = "cart-item"
           cartItem.innerHTML = `
-                        <div class="cart-item-image">
-                            <img src="${item.image}" alt="${item.name}">
-                        </div>
                         <div class="cart-item-info">
                             <div class="cart-item-name">${item.name}</div>
                             <div class="cart-item-price">$${item.price}</div>
@@ -427,7 +410,6 @@ class ProductsSystem {
         })
       }
     }
-
     if (cartTotal) {
       const total = this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
       cartTotal.textContent = total.toFixed(2)
@@ -511,15 +493,28 @@ class ProductsSystem {
   }
 
   displayProducts(products) {
-    const productsGrid = document.getElementById("productsGrid")
-    if (!productsGrid) return
-
-    productsGrid.innerHTML = ""
-
-    products.forEach((product) => {
-      const productCard = this.createProductCard(product)
-      productsGrid.appendChild(productCard)
-    })
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (!products.length) {
+      grid.innerHTML = '<p>No hay productos disponibles en inventario.</p>';
+      return;
+    }
+    products.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <h3>${product.name || 'Producto sin nombre'}</h3>
+        <p><strong>Tipo:</strong> ${product.type || 'Sin tipo'}</p>
+        <p><strong>Presentación:</strong> ${product.presentation || 'Sin presentación'}</p>
+        <p><strong>Precio:</strong> $${product.price || 0}</p>
+        <p><strong>Cantidad disponible:</strong> ${product.quantity || 0}</p>
+        <p><strong>Lugar:</strong> ${product.place || 'Sin ubicación'} (${product.placeType || 'Sin tipo'})</p>
+        <p><strong>Tienda:</strong> ${product.store || 'Sin tienda'}</p>
+        <button class="btn btn-primary" onclick="window.productsSystem.addToCartFromInventory(${product.id})">Agregar al carrito</button>
+      `;
+      grid.appendChild(card);
+    });
   }
 
   goToCheckout() {
@@ -722,6 +717,21 @@ class ProductsSystem {
       notification.classList.remove("show")
     }, 4000)
   }
+
+  addToCartFromInventory(inventarioId) {
+    const product = this.products.find(p => p.id === inventarioId);
+    if (!product) return;
+    const cartItem = this.cart.find(item => item.id === product.id);
+    if (cartItem) {
+      if (cartItem.quantity < product.quantity) {
+        cartItem.quantity++;
+      }
+    } else {
+      this.cart.push({ ...product, quantity: 1 });
+    }
+    this.saveCart();
+    this.updateCartUI();
+  }
 }
 
 // Initialize products system
@@ -729,3 +739,4 @@ const productsSystem = new ProductsSystem()
 
 // Make it globally available
 window.productsSystem = productsSystem
+window.addToCartFromInventory = (...args) => window.productsSystem.addToCartFromInventory(...args);

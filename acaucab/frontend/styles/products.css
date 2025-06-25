@@ -699,8 +699,8 @@ body {
   }
   
   .header-actions {
-    width: 100%;
-    justify-content: center;
+  width: 100%;
+  justify-content: center;
   }
   
   .nav-list {
@@ -730,12 +730,12 @@ body {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .cart-sidebar {
     width: 100%;
     right: -100%;
   }
-  
+
   .modal-content {
     width: 95%;
     margin: 10% auto;

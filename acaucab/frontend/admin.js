@@ -121,8 +121,8 @@ class AdminPanel {
     const refreshBtn = document.getElementById("refresh-btn")
     if (refreshBtn) {
       refreshBtn.addEventListener("click", () => {
-        this.refreshCurrentSection()
-      })
+      this.refreshCurrentSection()
+    })
     }
 
     this.setupModalForms()
@@ -180,17 +180,17 @@ class AdminPanel {
     const usuarioForm = document.getElementById("usuario-form")
     if (usuarioForm) {
       usuarioForm.addEventListener("submit", (e) => {
-        e.preventDefault()
+      e.preventDefault()
         this.saveUsuario()
-      })
+    })
     }
 
     const empleadoForm = document.getElementById("empleado-form")
     if (empleadoForm) {
       empleadoForm.addEventListener("submit", (e) => {
-        e.preventDefault()
-        this.saveEmpleado()
-      })
+      e.preventDefault()
+      this.saveEmpleado()
+    })
     }
 
     const rolForm = document.getElementById("rol-form")
@@ -311,19 +311,19 @@ class AdminPanel {
           <td>${usuario.nombre_empleado}</td>
           <td>${usuario.nombre_rol}</td>
           <td>${usuario.estado}</td>
-          <td class="action-buttons">
+                    <td class="action-buttons">
             ${this.canEditUsuario() ? `
               <button class="btn btn-warning" onclick="adminPanel.editUsuario(${usuario.usuario_id})">
-                <i class="fas fa-edit"></i>
-              </button>
+                            <i class="fas fa-edit"></i>
+                        </button>
             ` : ''}
             ${this.canDeleteUsuario() ? `
               <button class="btn btn-danger" onclick="adminPanel.deleteUsuario(${usuario.usuario_id})">
-                <i class="fas fa-trash"></i>
-              </button>
+                            <i class="fas fa-trash"></i>
+                        </button>
             ` : ''}
-          </td>
-        `
+                    </td>
+                `
         tbody.appendChild(row)
       })
     } catch (error) {
@@ -479,24 +479,24 @@ class AdminPanel {
       empleados.forEach((empleado) => {
         const row = document.createElement("tr")
         row.innerHTML = `
-          <td>${empleado.empleado_id}</td>
+                    <td>${empleado.empleado_id}</td>
           <td>${empleado.cédula_identidad}</td>
           <td>${empleado.nombre_completo}</td>
           <td>${empleado.fecha_ingreso}</td>
           <td>$${empleado.salario}</td>
-          <td class="action-buttons">
+                    <td class="action-buttons">
             ${this.canEditEmpleado() ? `
-              <button class="btn btn-warning" onclick="adminPanel.editEmpleado(${empleado.empleado_id})">
-                <i class="fas fa-edit"></i>
-              </button>
+                        <button class="btn btn-warning" onclick="adminPanel.editEmpleado(${empleado.empleado_id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
             ` : ''}
             ${this.canDeleteEmpleado() ? `
-              <button class="btn btn-danger" onclick="adminPanel.deleteEmpleado(${empleado.empleado_id})">
-                <i class="fas fa-trash"></i>
-              </button>
+                        <button class="btn btn-danger" onclick="adminPanel.deleteEmpleado(${empleado.empleado_id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
             ` : ''}
-          </td>
-        `
+                    </td>
+                `
         tbody.appendChild(row)
       })
 
@@ -532,10 +532,10 @@ class AdminPanel {
     const modal = document.getElementById("empleado-modal")
     if (modal) {
       modal.style.display = "block"
-      
-      if (empleado) {
-        this.fillEmpleadoForm(empleado)
-      } else {
+
+    if (empleado) {
+      this.fillEmpleadoForm(empleado)
+    } else {
         this.clearEmpleadoForm()
       }
     }
@@ -579,10 +579,10 @@ class AdminPanel {
     try {
       const response = await fetch(`${this.API_BASE_URL}/empleados/${id}`)
       if (response.ok) {
-        const empleado = await response.json()
-        this.openEmpleadoModal(empleado)
+      const empleado = await response.json()
+      this.openEmpleadoModal(empleado)
       } else {
-        this.showNotification("Error al cargar empleado", "error")
+      this.showNotification("Error al cargar empleado", "error")
       }
     } catch (error) {
       console.error("Error editing empleado:", error)
@@ -676,7 +676,7 @@ class AdminPanel {
           <td>${rol.rol_id}</td>
           <td>${rol.nombre_rol}</td>
           <td>${rol.descripción_rol}</td>
-          <td class="action-buttons">
+                    <td class="action-buttons">
             ${this.canEditRol() ? `
               <button class="btn btn-info" onclick="adminPanel.verPermisosRol(${rol.rol_id}, '${rol.nombre_rol}')" title="Ver Permisos">
                 <i class="fas fa-eye"></i>
@@ -687,11 +687,11 @@ class AdminPanel {
             ` : ''}
             ${this.canDeleteRol() ? `
               <button class="btn btn-danger" onclick="adminPanel.deleteRol(${rol.rol_id})">
-                <i class="fas fa-trash"></i>
-              </button>
+                            <i class="fas fa-trash"></i>
+                        </button>
             ` : ''}
-          </td>
-        `
+                    </td>
+                `
         tbody.appendChild(row)
       })
 
@@ -741,7 +741,7 @@ class AdminPanel {
           <td>${cerveza.descripción || "N/A"}</td>
           <td>${cerveza.tipo_cerveza}</td>
           <td>${cerveza.presentacion}</td>
-          <td class="action-buttons">
+                    <td class="action-buttons">
             ${this.canEditCerveza() ? `
               <button class="btn btn-warning" onclick="adminPanel.editCerveza(${cerveza.cerveza_id})">
                 <i class="fas fa-edit"></i>
@@ -749,11 +749,11 @@ class AdminPanel {
             ` : ''}
             ${this.canDeleteCerveza() ? `
               <button class="btn btn-danger" onclick="adminPanel.deleteCerveza(${cerveza.cerveza_id})">
-                <i class="fas fa-trash"></i>
-              </button>
+                            <i class="fas fa-trash"></i>
+                        </button>
             ` : ''}
-          </td>
-        `
+                    </td>
+                `
         tbody.appendChild(row)
       })
     } catch (error) {
@@ -1066,23 +1066,23 @@ class AdminPanel {
       case 'ranking-proveedores':
         this.showNotification("Generando ranking de miembros proveedores...", "info")
         // TODO: Implementar reporte de ranking de proveedores
-        break
+      break
       case 'puntos-canjeados':
         this.showNotification("Generando reporte de puntos canjeados...", "info")
         // TODO: Implementar reporte de puntos canjeados
-        break
+      break
       case 'flujo-pago':
         this.showNotification("Generando reporte de flujo de pago...", "info")
         // TODO: Implementar reporte de flujo de pago
-        break
+      break
       case 'duracion-pedidos':
         this.showNotification("Generando reporte de duración de pedidos...", "info")
         // TODO: Implementar reporte de duración de pedidos
-        break
+      break
       case 'incumplimientos-horarios':
         this.showNotification("Generando reporte de incumplimientos horarios...", "info")
         // TODO: Implementar reporte de incumplimientos horarios
-        break
+      break
       default:
         this.showNotification("Tipo de reporte no reconocido", "error")
     }
@@ -1202,8 +1202,8 @@ class AdminPanel {
   async loadRolPermisos(rolId) {
     try {
       const response = await fetch(`${this.API_BASE_URL}/roles/${rolId}/permisos`)
-      const data = await response.json()
-      
+    const data = await response.json()
+
       this.updatePermisosGrid(data.privilegios)
       
     } catch (error) {
@@ -1364,7 +1364,7 @@ class AdminPanel {
         modal.style.display = "block"
       }
 
-    } catch (error) {
+  } catch (error) {
       console.error("Error verificando permisos del rol:", error)
       this.showNotification("Error al cargar permisos del rol", "error")
     }
