@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Tienda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/products.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>ACAUCAB</h1>
+                <p>Tienda de Cervezas Artesanales</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+                <button class="btn btn-primary" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Catálogo de productos -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Tarjetas de productos generadas por JS -->
+        </div>
+    </div>
+
+    <!-- Carrito lateral -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Carrito</h3>
+            <button class="close-cart" id="closeCart"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Productos en el carrito -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total: $<span id="cartTotal">0.00</span></strong>
+            </div>
+            <button class="btn btn-success" id="checkoutBtn">
+                <i class="fas fa-credit-card"></i> Pagar
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de pago -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Método de Pago</h3>
+                <span class="close" id="closePaymentModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label><input type="radio" name="paymentMethod" value="efectivo" checked> Efectivo</label><br>
+                        <label><input type="radio" name="paymentMethod" value="tarjeta"> Tarjeta de Débito/Crédito</label><br>
+                        <label><input type="radio" name="paymentMethod" value="pago_movil"> Pago Móvil</label><br>
+                        <label><input type="radio" name="paymentMethod" value="zelle"> Zelle</label>
+                    </div>
+                    <div class="form-group" id="paymentDetails">
+                        <!-- Aquí se mostrarán los campos según el método -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelPayment">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Confirmar Pago</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="products.js"></script>
+</body>
+</html>

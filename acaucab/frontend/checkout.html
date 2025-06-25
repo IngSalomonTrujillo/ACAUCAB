@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Checkout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/checkout.css">
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-beer"></i>
+                    <h1>ACAUCAB</h1>
+                </div>
+                <h2>Finalizar Compra</h2>
+            </div>
+            <div class="checkout-steps">
+                <div class="step completed">
+                    <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <span>Carrito</span>
+                </div>
+                <div class="step active">
+                    <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                    <span>Pago</span>
+                </div>
+                <div class="step">
+                    <div class="step-icon"><i class="fas fa-check"></i></div>
+                    <span>Confirmación</span>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="checkout-grid">
+                <!-- Checkout Form -->
+                <div class="checkout-form">
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-user"></i> Datos de Contacto</h3>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">Nombre</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Apellido</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Teléfono</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> Dirección de Entrega</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Dirección Completa</label>
+                            <textarea id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">Ciudad</label>
+                                <input type="text" id="city" name="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">Estado</label>
+                                <input type="text" id="state" name="state" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="zipCode">Código Postal</label>
+                            <input type="text" id="zipCode" name="zipCode" required>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-credit-card"></i> Método de Pago</h3>
+                        </div>
+                        <div class="payment-methods">
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="card" checked>
+                                <div class="payment-option">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Tarjeta de Crédito/Débito</span>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="transfer">
+                                <div class="payment-option">
+                                    <i class="fas fa-university"></i>
+                                    <span>Transferencia Bancaria</span>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="cash">
+                                <div class="payment-option">
+                                    <i class="fas fa-money-bill"></i>
+                                    <span>Pago Contra Entrega</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="card-details" id="cardDetails">
+                            <div class="form-group">
+                                <label for="cardNumber">Número de Tarjeta</label>
+                                <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiryDate">Fecha de Vencimiento</label>
+                                    <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/AA">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="123">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardName">Nombre en la Tarjeta</label>
+                                <input type="text" id="cardName" name="cardName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <div class="summary-header">
+                        <h3><i class="fas fa-receipt"></i> Resumen del Pedido</h3>
+                    </div>
+                    <div class="order-items" id="orderItems">
+                        <!-- Order items will be loaded here -->
+                    </div>
+                    <div class="order-totals">
+                        <div class="total-line">
+                            <span>Subtotal:</span>
+                            <span>$<span id="subtotal">0.00</span></span>
+                        </div>
+                        <div class="total-line">
+                            <span>Envío:</span>
+                            <span>$<span id="shipping">5.00</span></span>
+                        </div>
+                        <div class="total-line">
+                            <span>IVA (16%):</span>
+                            <span>$<span id="tax">0.00</span></span>
+                        </div>
+                        <div class="total-line total">
+                            <span>Total:</span>
+                            <span>$<span id="total">0.00</span></span>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-primary btn-block" id="placeOrderBtn">
+                            <i class="fas fa-check"></i>
+                            Realizar Pedido
+                        </button>
+                        <a href="products.html" class="btn btn-secondary btn-block">
+                            <i class="fas fa-arrow-left"></i>
+                            Volver a Productos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+    <script src="auth.js"></script>
+    <script src="checkout.js"></script>
+</body>
+</html>
