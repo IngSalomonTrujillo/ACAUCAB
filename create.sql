@@ -60,7 +60,8 @@ ALTER TABLE Cerveza_Caracteristica
 CREATE TABLE Cerveza_Presentacion 
     ( 
      Presentación_presentación_id INTEGER  NOT NULL , 
-     Cerveza_cerveza_id           INTEGER  NOT NULL 
+     Cerveza_cerveza_id           INTEGER  NOT NULL ,
+      precio_unitario             INTEGER  NOT NULL
     ) 
 ;
 
@@ -270,6 +271,7 @@ ALTER TABLE Detalle_Evento
 
 CREATE TABLE Detalle_Física 
     ( 
+     Venta_fisica_id INTEGER NOT NULL ,
      precio_unitario               decimal  NOT NULL , 
      cantidad                      INTEGER  NOT NULL , 
      Venta_Física_tienda_fisica_id INTEGER  NOT NULL , 
@@ -280,7 +282,7 @@ CREATE TABLE Detalle_Física
 ;
 
 ALTER TABLE Detalle_Física 
-    ADD CONSTRAINT Detalle_Física_PK PRIMARY KEY ( Inventario_inventario_id, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id ) ;
+    ADD CONSTRAINT Detalle_Física_PK PRIMARY KEY (Venta_fisica_id, Inventario_inventario_id, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id ) ;
 
 CREATE TABLE Detalle_Online 
     ( 
@@ -632,20 +634,7 @@ CREATE TABLE Pago_Entrada
 ALTER TABLE Pago_Entrada 
     ADD CONSTRAINT Pago_Entrada_PK PRIMARY KEY ( Método_Pago_método_pago_id ) ;
 
-CREATE TABLE Pago_Fisica 
-    ( 
-     fecha_pago                    DATE  NOT NULL , 
-     monto_pagado                  decimal  NOT NULL , 
-     referencia_pago               VARCHAR (50)  NOT NULL , 
-     Venta_Física_tienda_fisica_id INTEGER  NOT NULL , 
-     Venta_Física_usuario_id       INTEGER  NOT NULL , 
-     Método_Pago_método_pago_id    INTEGER  NOT NULL , 
-     puntos_usuados                INTEGER 
-    ) 
-;
 
-ALTER TABLE Pago_Fisica 
-    ADD CONSTRAINT Pago_Fisica_PK PRIMARY KEY ( Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Método_Pago_método_pago_id ) ;
 
 CREATE TABLE Pago_Online 
     ( 
@@ -1011,6 +1000,7 @@ ALTER TABLE Venta_Evento
 
 CREATE TABLE Venta_Física 
     ( 
+     Venta_id SERIAL NOT NULL, 
      Tienda_Física_tienda_fisica_id INTEGER  NOT NULL , 
      Usuario_usuario_id             INTEGER  NOT NULL , 
      fecha_hora_venta               TIMESTAMP WITH TIME ZONE  NOT NULL , 
@@ -1019,7 +1009,7 @@ CREATE TABLE Venta_Física
 ;
 
 ALTER TABLE Venta_Física 
-    ADD CONSTRAINT Venta_Física_PK PRIMARY KEY ( Tienda_Física_tienda_fisica_id, Usuario_usuario_id ) ;
+    ADD CONSTRAINT Venta_Física_PK PRIMARY KEY (Venta_id, Tienda_Física_tienda_fisica_id, Usuario_usuario_id ) ;
 
 CREATE TABLE Venta_Online 
     ( 
@@ -1036,6 +1026,7 @@ ALTER TABLE Venta_Online
 
 CREATE TABLE VentaF_Estatus 
     ( 
+	 Venta_fisica_id INTEGER NOT NULL,
      fecha_inicio                                DATE  NOT NULL , 
      fecha_fin                                   DATE  , 
      Estatus_estatus_id                          INTEGER  NOT NULL , 
@@ -1045,7 +1036,8 @@ CREATE TABLE VentaF_Estatus
 ;
 
 ALTER TABLE VentaF_Estatus 
-    ADD CONSTRAINT VentaF_Estatus_PK PRIMARY KEY ( Estatus_estatus_id, Venta_Física_Tienda_Física_tienda_fisica_id, Venta_Física_Usuario_usuario_id ) ;
+    ADD CONSTRAINT VentaF_Estatus_PK PRIMARY KEY ( Venta_fisica_id, Estatus_estatus_id, Venta_Física_Tienda_Física_tienda_fisica_id, Venta_Física_Usuario_usuario_id ) ;
+
 
 CREATE TABLE VentaO_Estatus 
     ( 
@@ -1059,6 +1051,26 @@ CREATE TABLE VentaO_Estatus
 
 ALTER TABLE VentaO_Estatus 
     ADD CONSTRAINT VentaO_Estatus_PK PRIMARY KEY ( Venta_Online_Tienda_Online_tienda_online_id, Venta_Online_Usuario_usuario_id, Estatus_estatus_id ) ;
+
+CREATE TABLE Pago_Fisica 
+(
+    Venta_fisica_id  INTEGER NOT NULL,  
+    fecha_pago DATE NOT NULL, 
+    monto_pagado DECIMAL NOT NULL, 
+    referencia_pago VARCHAR(50) NOT NULL, 
+    Venta_Física_tienda_fisica_id INTEGER NOT NULL, 
+    Venta_Física_usuario_id INTEGER NOT NULL, 
+    Método_Pago_método_pago_id INTEGER NOT NULL, 
+    puntos_usuados INTEGER DEFAULT  0,
+
+    -- Definir la clave primaria compuesta
+    CONSTRAINT Pago_Fisica_PK PRIMARY KEY ( Venta_fisica_id, Venta_Física_tienda_fisica_id, Método_Pago_método_pago_id),
+
+    -- Clave foránea para el usuario
+    CONSTRAINT Pago_Fisica_FK_Usuario FOREIGN KEY (Venta_Física_usuario_id) 
+    REFERENCES Usuario (usuario_id)
+
+);
 
 ALTER TABLE Asistencia 
     ADD CONSTRAINT Asistencia_Empleado_FK FOREIGN KEY 
@@ -1084,9 +1096,7 @@ ALTER TABLE Cerveza_Caracteristica
 
 ALTER TABLE Cerveza_Caracteristica 
     ADD CONSTRAINT Cerveza_Caracteristica_Cerveza_FK FOREIGN KEY 
-    ( 
-     Cerveza_cerveza_id
-    ) 
+    (Cerveza_cerveza_id) 
     REFERENCES Cerveza 
     ( 
      cerveza_id
@@ -1422,14 +1432,19 @@ ALTER TABLE Detalle_Física
     ADD CONSTRAINT Detalle_Física_Venta_Física_FK FOREIGN KEY 
     ( 
      Venta_Física_tienda_fisica_id,
-     Venta_Física_usuario_id
+     Venta_Física_usuario_id,
+	 Venta_fisica_id
     ) 
     REFERENCES Venta_Física 
     ( 
      Tienda_Física_tienda_fisica_id,
-     Usuario_usuario_id
+     Usuario_usuario_id,
+	 venta_id
     ) 
 ;
+
+
+
 
 ALTER TABLE Detalle_Online 
     ADD CONSTRAINT Detalle_Online_Inventario_FK FOREIGN KEY 
@@ -1937,12 +1952,14 @@ ALTER TABLE Pago_Fisica
     ADD CONSTRAINT Pago_Fisica_Venta_Física_FK FOREIGN KEY 
     ( 
      Venta_Física_tienda_fisica_id,
-     Venta_Física_usuario_id
+     Venta_Física_usuario_id,
+	 Venta_fisica_id
     ) 
     REFERENCES Venta_Física 
     ( 
      Tienda_Física_tienda_fisica_id,
-     Usuario_usuario_id
+     Usuario_usuario_id,
+	 Venta_id
     ) 
 ;
 
@@ -2454,12 +2471,14 @@ ALTER TABLE VentaF_Estatus
     ADD CONSTRAINT VentaF_Estatus_Venta_Física_FK FOREIGN KEY 
     ( 
      Venta_Física_Tienda_Física_tienda_fisica_id,
-     Venta_Física_Usuario_usuario_id
+     Venta_Física_Usuario_usuario_id,
+	 Venta_fisica_id
     ) 
     REFERENCES Venta_Física 
     ( 
      Tienda_Física_tienda_fisica_id,
-     Usuario_usuario_id
+     Usuario_usuario_id,
+	 venta_id
     ) 
 ;
 
@@ -2486,3 +2505,15 @@ ALTER TABLE VentaO_Estatus
      Usuario_usuario_id
     ) 
 ;
+
+
+-- Agregar la nueva columna para la tienda física
+ALTER TABLE Inventario 
+ADD COLUMN Tienda_Física_tienda_fisica_id INTEGER NOT NULL;
+
+-- Establecer la relación con Tienda_Física
+ALTER TABLE Inventario
+ADD CONSTRAINT Inventario_Tienda_Física_FK FOREIGN KEY (Tienda_Física_tienda_fisica_id) 
+REFERENCES Tienda_Física (tienda_fisica_id);
+
+
