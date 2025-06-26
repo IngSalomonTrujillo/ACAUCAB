@@ -4297,9 +4297,17 @@ INSERT INTO Cerveza_Caracteristica (Cerveza_cerveza_id, Característica_caracter
 (5, 3, '6 SRM - Dorado pálido');
 
 -- 19. Tabla Cerveza_Presentacion (2 FK: Cerveza y Presentación)
-INSERT INTO Cerveza_Presentacion (Presentación_presentación_id, Cerveza_cerveza_id) VALUES
-(1, 1), (2, 2), (3, 3), (4, 4), (5, 5),
-(6, 6), (7, 7), (8, 8), (9, 9), (10, 10);
+INSERT INTO Cerveza_Presentacion (Presentación_presentación_id, Cerveza_cerveza_id, precio_unitario) VALUES
+(1, 1, 12.50),   -- Destilo Amber - Botella 330ml
+(2, 2, 15.00),   -- Destilo Amber - Lata 473ml
+(3, 3, 14.00),   -- Benitz Pale Ale - Botella 330ml
+(4, 4, 16.50),   -- Benitz Pale Ale - Lata 473ml
+(5, 5, 13.75),   -- Mito Candileja - Botella 330ml
+(6, 6, 15.25),   -- Mito Candileja - Lata 473ml
+(7, 7, 14.50),   -- Ángel o Demonio - Botella 330ml
+(8, 8, 17.00),   -- Ángel o Demonio - Lata 473ml
+(9, 9, 12.00),   -- Aldarra Mantuana - Botella 330ml
+(10, 10, 14.50);  -- Aldarra Mantuana - Lata 473ml
 
 -- 35. Tabla Empleado_Beneficio (2 FK: Empleado y Beneficio)
 INSERT INTO Empleado_Beneficio (Empleado_empleado_id, Beneficio_beneficio_id, empleado_beneficio_id, fecha_asignación, monto_beneficio) VALUES
@@ -4583,37 +4591,6 @@ INSERT INTO Departamento (nombre_departamento) VALUES ('Ventas'), ('Compras'), (
 
 -- 77. Tabla tienda online 
 INSERT INTO Tienda_Online (dirección_web) VALUES ('https://www.acaucab-principal.express' ), ('https://www.templodelacerveza.online'), ('https://www.acaucab-chacao.com'), ('https://www.rutaartesanal-valencia.ve'), ('https://www.birroteca-naguanagua.store'), ('https://www.refugiolupulo.com'), ('https://www.estacioncerveza-petare.net'), ('https://www.acaucab-altagracia.org'), ('https://www.bodegonlasdelicias.com'), ('https://www.casadelamalta.store');
-
--- 48 Insertar 10 registros de ejemplo para Inventario
-INSERT INTO Inventario (
-    inventario_id,
-    cantidad_presentaciones,
-    Tienda_Online_tienda_online_id,
-    Cerveza_Presentacion_Cerveza_cerveza_id,
-    Cerveza_Presentacion_Presentación_presentación_id
-) VALUES
--- Inventario para tienda online 1 (Destilo Amber)
-(1, 150, 1, 1, 1),
--- Inventario para tienda online 2 (Benitz Pale Ale)
-(2, 120, 2, 2, 2),
--- Inventario para tienda online 3 (Mito Candileja)
-(3, 100, 3, 3, 3),
--- Inventario para tienda online 4 (Ángel o Demonio)
-(4, 80, 4, 4, 4),
--- Inventario para tienda online 5 (Aldarra Mantuana)
-(5, 110, 5, 5, 5),
--- Inventario físico (sin tienda online) Destilo Amber
-(6, 200, NULL, 1, 1),
--- Inventario físico (sin tienda online) Benitz Pale Ale
-(7, 180, NULL, 2, 2),
--- Inventario físico (sin tienda online) Mito Candileja
-(8, 150, NULL, 3, 3),
--- Inventario físico (sin tienda online) Ángel o Demonio
-(9, 130, NULL, 4, 4),
--- Inventario físico (sin tienda online) Aldarra Mantuana
-(10, 160, NULL, 5, 5);
-
-
 -- 78. Tabla tienda física 
 INSERT INTO Tienda_Física (tienda_fisica_id, nombre_ubicación, Orden_Reposición_orden_reposición_id, Lugar_lugar_id) VALUES
 (1, 'ACAUCAB Principal', 1, 4), -- Caracas
@@ -4626,6 +4603,37 @@ INSERT INTO Tienda_Física (tienda_fisica_id, nombre_ubicación, Orden_Reposici�
 (8, 'ACAUCAB Sucre', 8, 10), -- Sucre
 (9, 'ACAUCAB Libertador', 9, 8), -- Libertador
 (10, 'ACAUCAB Paseo Las Mercedes', 10, 6); -- Chacao
+
+-- 48 Insertar 10 registros de ejemplo para Inventario
+-- Inventario para 4 tiendas físicas (todas con tienda física, algunas con tienda online también)
+INSERT INTO Inventario (
+    cantidad_presentaciones,
+    Tienda_Física_tienda_fisica_id,
+    Tienda_Online_tienda_online_id,
+    Cerveza_Presentacion_Cerveza_cerveza_id,
+    Cerveza_Presentacion_Presentación_presentación_id
+) VALUES
+-- Tienda Física 1 (ACAUCAB Principal) - Con tienda online
+(150, 1, 1, 1, 1),  -- Destilo Amber Botella
+(75, 1, 1, 2, 2),   -- Destilo Amber Lata
+(120, 1, NULL, 3, 3),  -- Benitz Pale Ale Botella (solo física)
+(60, 1, NULL, 4, 4),   -- Benitz Pale Ale Lata (solo física)
+
+-- Tienda Física 2 (ACAUCAB Centro) - Sin tienda online
+(200, 2, NULL, 1, 1),  -- Destilo Amber Botella
+(100, 2, NULL, 2, 2),  -- Destilo Amber Lata
+(180, 2, NULL, 3, 3),  -- Benitz Pale Ale Botella
+(90, 2, NULL, 4, 4),   -- Benitz Pale Ale Lata
+
+-- Tienda Física 3 (ACAUCAB Este) - Con tienda online para algunos productos
+(100, 3, 2, 5, 5),  -- Mito Candileja Botella (con online)
+(50, 3, 2, 6, 6),   -- Mito Candileja Lata (con online)
+(80, 3, NULL, 7, 7),  -- Ángel o Demonio Botella (solo física)
+(40, 3, NULL, 8, 8),  -- Ángel o Demonio Lata (solo física)
+
+-- Tienda Física 4 (ACAUCAB Oeste) - Solo productos físicos
+(110, 4, NULL, 9, 9),  -- Aldarra Mantuana Botella
+(55, 4, NULL, 10, 10);  -- Aldarra Mantuana Lata
 
 -- 79. Tabla Lugar tienda
 INSERT INTO Lugar_Tienda (Tienda_Física_tienda_fisica_id, lugar_tienda_id, nombre_lugar_tienda, tipo_lugar_tienda, Lugar_Tienda_lugar_tienda_id, Inventario_inventario_id) VALUES
@@ -4709,17 +4717,17 @@ INSERT INTO Venta_Física (Tienda_Física_tienda_fisica_id, Usuario_usuario_id, 
 (5, 20, '2025-07-12 12:00:00', 1250000);
 
 -- 50. Tabla Detalle_Física (3 FK: Venta_Física, Inventario, Tasa_Cambio)
-INSERT INTO Detalle_Física (precio_unitario, cantidad, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Tasa_Cambio_tasa_cambio_id, Inventario_inventario_id) VALUES
-(60000, 20, 1, 16, 1, 1),
-(47500, 20, 1, 17, 1, 2),
-(50000, 30, 1, 18, 1, 3),
-(42500, 20, 2, 16, 1, 4),
-(55000, 20, 2, 17, 1, 5),
-(43333, 30, 2, 18, 1, 6),
-(45000, 20, 3, 19, 3, 7),
-(37500, 20, 3, 20, 3, 8),
-(46666, 30, 4, 19, 3, 9),
-(41666, 30, 5, 20, 3, 10);
+INSERT INTO Detalle_Física (Venta_fisica_id, precio_unitario, cantidad, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Tasa_Cambio_tasa_cambio_id, Inventario_inventario_id) VALUES
+(1,60000, 20, 1, 16, 1, 1),
+(2,47500, 20, 1, 17, 1, 2),
+(3,50000, 30, 1, 18, 1, 3),
+(4,42500, 20, 2, 16, 1, 4),
+(5,55000, 20, 2, 17, 1, 5),
+(6,43333, 30, 2, 18, 1, 6),
+(7,45000, 20, 3, 19, 3, 7),
+(8,37500, 20, 3, 20, 3, 8),
+(9,46666, 30, 4, 19, 3, 9),
+(10,41666, 30, 5, 20, 3, 10);
 
 -- 51. Tabla Venta_Online (2 FK: Tienda_Online, Usuario)
 INSERT INTO Venta_Online (Tienda_Online_tienda_online_id, Usuario_usuario_id, venta_id, fecha_hora_venta, monto_total) VALUES
@@ -4825,17 +4833,17 @@ INSERT INTO Detalle_Evento (Tasa_Cambio_tasa_cambio_id, detalle_evento_id, canti
 (1, 10, 15, 123456780, 5, 2, 5, 5);
 
 -- 57. Tabla Pago_Fisica (3 FK: Venta_Física, Método_Pago)
-INSERT INTO Pago_Fisica (fecha_pago, monto_pagado, referencia_pago, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Método_Pago_método_pago_id, puntos_usuados) VALUES
-('2025-03-05', 1200000, 'PAG-001', 1, 16, 16, 0),
-('2025-03-10', 950000, 'PAG-002', 1, 17, 11, 50000),
-('2025-03-15', 1500000, 'PAG-003', 1, 18, 1, 0),
-('2025-04-02', 850000, 'PAG-004', 2, 16, 12, 30000),
-('2025-04-10', 1100000, 'PAG-005', 2, 17, 17, 0),
-('2025-04-20', 1300000, 'PAG-006', 2, 18, 2, 0),
-('2025-05-05', 900000, 'PAG-007', 3, 19, 13, 40000),
-('2025-05-15', 750000, 'PAG-008', 3, 20, 18, 0),
-('2025-06-03', 1400000, 'PAG-009', 4, 19, 3, 0),
-('2025-07-12', 1250000, 'PAG-010', 5, 20, 14, 60000);
+INSERT INTO Pago_Fisica (Venta_fisica_id, fecha_pago, monto_pagado, referencia_pago, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Método_Pago_método_pago_id, puntos_usuados) VALUES
+(1,'2025-03-05', 1200000, 'PAG-001', 1, 16, 16, 0),
+(2,'2025-03-10', 950000, 'PAG-002', 1, 17, 11, 50000),
+(3,'2025-03-15', 1500000, 'PAG-003', 1, 18, 1, 0),
+(4,'2025-04-02', 850000, 'PAG-004', 2, 16, 12, 30000),
+(5,'2025-04-10', 1100000, 'PAG-005', 2, 17, 17, 0),
+(6,'2025-04-20', 1300000, 'PAG-006', 2, 18, 2, 0),
+(7,'2025-05-05', 900000, 'PAG-007', 3, 19, 13, 40000),
+(8,'2025-05-15', 750000, 'PAG-008', 3, 20, 18, 0),
+(9,'2025-06-03', 1400000, 'PAG-009', 4, 19, 3, 0),
+(10,'2025-07-12', 1250000, 'PAG-010', 5, 20, 14, 60000);
 
 -- 58. Tabla Pago_Online (3 FK: Venta_Online, Método_Pago)
 INSERT INTO Pago_Online (Método_Pago_método_pago_id, fecha_pago, monto_pagado, referencia_pago, Venta_Online_tienda_online_id, Venta_Online_usuario_id, puntos_usados) VALUES
@@ -5107,17 +5115,17 @@ INSERT INTO OrdenR_Estatus (fecha_inicio, fecha_fin, Estatus_estatus_id, Orden_R
 ('2025-04-15', '2025-04-15', 1, 4);
 
 -- 73. Tabla VentaF_Estatus (3 FK: Venta_Física, Estatus)
-INSERT INTO VentaF_Estatus (fecha_inicio, fecha_fin, Estatus_estatus_id, Venta_Física_Tienda_Física_tienda_fisica_id, Venta_Física_Usuario_usuario_id) VALUES
-('2025-03-05', '2025-03-05', 1, 1, 16),
-('2025-03-05', '2025-03-05', 2, 1, 16),
-('2025-03-05', NULL, 3, 1, 16),
-('2025-03-10', '2025-03-10', 1, 1, 17),
-('2025-03-10', '2025-03-10', 2, 1, 17),
-('2025-03-10', NULL, 3, 1, 17),
-('2025-03-15', '2025-03-15', 1, 1, 18),
-('2025-03-15', '2025-03-15', 2, 1, 18),
-('2025-03-15', NULL, 3, 1, 18),
-('2025-04-02', '2025-04-02', 1, 2, 16);
+INSERT INTO VentaF_Estatus (Venta_fisica_id, fecha_inicio, fecha_fin, Estatus_estatus_id, Venta_Física_Tienda_Física_tienda_fisica_id, Venta_Física_Usuario_usuario_id) VALUES
+(1,'2025-03-05', '2025-03-05', 1, 1, 16),
+(2,'2025-03-05', '2025-03-05', 2, 1, 17),
+(3,'2025-03-05', NULL, 3, 1, 18),
+(4,'2025-03-10', '2025-03-10', 1, 2, 16),
+(5,'2025-03-10', '2025-03-10', 2, 2, 17),
+(6,'2025-03-10', NULL, 3, 2, 18),
+(7,'2025-03-15', '2025-03-15', 1, 3, 19),
+(8,'2025-03-15', '2025-03-15', 2, 3, 20),
+(9,'2025-03-15', NULL, 3, 4, 19),
+(10,'2025-04-02', '2025-04-02', 1, 5, 20);
 
 -- 74. Tabla VentaO_Estatus (3 FK: Venta_Online, Estatus)
 INSERT INTO VentaO_Estatus (fecha_inicio, fecha_fin, Estatus_estatus_id, Venta_Online_Tienda_Online_tienda_online_id, Venta_Online_Usuario_usuario_id) VALUES
