@@ -337,8 +337,8 @@ $$ LANGUAGE plpgsql;
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- CREATE OR REPLACE procedure Pregistrar_venta_tienda_fisica(
-    p_tienda_fisica_id INTEGER,
+ CREATE OR REPLACE procedure registrar_venta_tienda_online(
+    p_tienda_online_id INTEGER,
     p_usuario_Rif INTEGER,
     p_fecha_hora_venta TIMESTAMP WITH TIME ZONE,
     p_productos INTEGER[], -- Array de IDs de productos
@@ -373,7 +373,7 @@ BEGIN
         SELECT cantidad_presentaciones INTO v_stock_actual
         FROM Inventario
         WHERE Cerveza_Presentacion_Cerveza_cerveza_id = p_productos[i] 
-          AND tienda_física_tienda_fisica_id = p_tienda_fisica_id
+          AND tienda_online_tienda_online_id = p_tienda_online_id
           LIMIT 1;
 
         IF v_stock_actual < p_cantidades[i] THEN
@@ -399,11 +399,11 @@ BEGIN
         RAISE EXCEPTION 'No existe el cliente con ese rif';
     END IF;
 
-    -- Registrar la venta en la tabla Venta_Física
-    INSERT INTO Venta_Física (Tienda_Física_tienda_fisica_id, Usuario_usuario_id, fecha_hora_venta, monto_total)
-    VALUES (p_tienda_fisica_id,v_usuario_id, p_fecha_hora_venta, v_total)
+    -- Registrar la venta en la tabla Venta_online
+    INSERT INTO Venta_online (tienda_online_tienda_online_id, Usuario_usuario_id, fecha_hora_venta, monto_total)
+    VALUES ( p_tienda_online_id,v_usuario_id, p_fecha_hora_venta, v_total)
     RETURNING venta_id INTO v_venta_id;
-	
+
 RAISE NOTICE 'Venta registrada con el id: %', v_venta_id;
 
     -- Registrar los detalles de la venta
@@ -412,7 +412,7 @@ RAISE NOTICE 'Venta registrada con el id: %', v_venta_id;
         UPDATE Inventario
         SET cantidad_presentaciones = cantidad_presentaciones - p_cantidades[i]
         WHERE Cerveza_Presentacion_Cerveza_cerveza_id = p_productos[i]
-          AND tienda_física_tienda_fisica_id = p_tienda_fisica_id;
+          AND tienda_online_tienda_online_id  = p_tienda_online_id;
 RAISE NOTICE 'actualize el inventario del producto %',p_productos[i];
         -- Insertar detalle de la venta
 
@@ -422,24 +422,19 @@ RAISE NOTICE 'actualize el inventario del producto %',p_productos[i];
         WHERE Presentación_presentación_id = p_productos[i]
         LIMIT 1; 
 		
-        INSERT INTO Detalle_Física (venta_fisica_id, precio_unitario, cantidad, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Tasa_Cambio_tasa_cambio_id, Inventario_inventario_id)
-        VALUES (v_venta_id, v_precio_unitario, p_cantidades[i], p_tienda_fisica_id, v_usuario_id, 1, p_productos[i]); -- Asumiendo tasa de cambio 1
+        INSERT INTO Detalle_online (venta_online_id, precio_unitario, cantidad, venta_online_tienda_online_id, venta_online_usuario_id, Tasa_Cambio_tasa_cambio_id, Inventario_inventario_id)
+        VALUES (v_venta_id, v_precio_unitario, p_cantidades[i], p_tienda_online_id, v_usuario_id, 1, p_productos[i]); -- Asumiendo tasa de cambio 1
     RAISE NOTICE 'inserte detalle x ';
 	END LOOP;
 
 
       -- Registrar el pago
     FOR i IN 1..array_length(p_metodos_pago, 1) LOOP
-        INSERT INTO Pago_Fisica (venta_fisica_id, fecha_pago, monto_pagado, referencia_pago, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Método_Pago_método_pago_id)
-        VALUES (v_venta_id, p_fecha_hora_venta::DATE, v_total / array_length(p_metodos_pago, 1), 'PAG - 0' || v_venta_id, p_tienda_fisica_id, v_usuario_id, p_metodos_pago[i]); -- Dividir el total entre el número de métodos de pago
+        INSERT INTO Pago_online (venta_online_id, fecha_pago, monto_pagado, referencia_pago, venta_online_tienda_online_id, venta_online_usuario_id, Método_Pago_método_pago_id, puntos_usados)
+        VALUES (v_venta_id, p_fecha_hora_venta::DATE, v_total / array_length(p_metodos_pago, 1), 'PAG - 0' || v_venta_id, p_tienda_online_id, v_usuario_id, p_metodos_pago[i], p_puntos ); -- Dividir el total entre el número de métodos de pago
     END LOOP;
 
-     -- Actualizar puntos del cliente
-	   -- Calcular los puntos ganados (por ejemplo, 1 punto por cada 100 unidades monetarias gastadas)
-    v_puntos_ganados := FLOOR(v_total / 100) - p_puntos; -- Ajusta la lógica según tus necesidades
-    UPDATE Cliente_Punto
-    SET cantidad_puntos = cantidad_puntos + v_puntos_ganados - p_puntos 
-    WHERE Cliente_RIF = p_usuario_rif;
+
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -449,23 +444,34 @@ $$;
 
 
 -- Ejecutar la función
-Call Pregistrar_venta_tienda_fisica(
-    1,  -- ID de la tienda física
-    123456789,  -- ID del usuario (cliente)
-    '2025-08-01 10:00:00',  -- Fecha y hora de la venta
-    ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
-    ARRAY[5, 3],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
-    ARRAY[1],  -- Método de pago (ID 1)
-    10  -- Puntos a utilizar
-);
+--Call Pregistrar_venta_tienda_fisica(
+  --  1,  -- ID de la tienda física
+    --123456789,  -- ID del usuario (cliente)
+    --'2025-08-01 10:00:00',  -- Fecha y hora de la venta
+    --ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
+    --ARRAY[5, 3],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
+    --ARRAY[1],  -- Método de pago (ID 1)
+    --10  -- Puntos a utilizar
+--);
 
 -- Ejecutar la función
-CALL Pregistrar_venta_tienda_fisica(
+--CALL registrar_venta_tienda_online(
+    --1,  -- ID de la tienda física
+    --123456789,  -- ID del usuario (cliente)
+    --'2025-09-07 00:49:00',  -- Fecha y hora de la venta
+    --ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
+    --ARRAY[30, 25],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
+    --ARRAY[1, 2],  -- Métodos de pago (IDs 1 y 2)
+    --10  -- Puntos a utilizar
+--);
+
+-- Ejecutar la función
+CALL registrar_venta_tienda_online(
     1,  -- ID de la tienda física
     123456789,  -- ID del usuario (cliente)
     '2025-09-07 00:49:00',  -- Fecha y hora de la venta
     ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
-    ARRAY[30, 25],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
+    ARRAY[22, 11],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
     ARRAY[1, 2],  -- Métodos de pago (IDs 1 y 2)
     10  -- Puntos a utilizar
 );
@@ -484,11 +490,11 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     -- Este procedimiento contiene la lógica de inserción en VentaF_Estatus.
-    INSERT INTO VentaF_Estatus(
-        Venta_fisica_id,
-        Venta_Física_Tienda_Física_tienda_fisica_id,
-        Venta_Física_Usuario_usuario_id,
-        Estatus_estatus_id,
+    INSERT INTO Ventao_Estatus(
+        venta_online_id,
+        venta_online_tienda_online_tienda_online_id,
+        venta_online_usuario_usuario_id,
+        estatus_estatus_id,
         fecha_inicio,
         fecha_fin
     )
@@ -507,14 +513,14 @@ $$;
 -- #############################################################################
 -- # 3. FUNCIÓN INTERMEDIARIA PARA EL TRIGGER
 -- #############################################################################
-CREATE OR REPLACE FUNCTION F_trigger_venta_fisica_estatus()
+CREATE OR REPLACE FUNCTION F_trigger_venta_online_estatus()
 RETURNS TRIGGER AS $$
 BEGIN
     -- Esta función solo sirve como puente para llamar al procedimiento,
     -- pasando los datos de la fila recién insertada (NEW).
     CALL P_actualizar_venta_estatus(
         NEW.venta_id,
-        NEW.Tienda_Física_tienda_fisica_id,
+        NEW.tienda_online_tienda_online_id,
         NEW.Usuario_usuario_id,
         NEW.fecha_hora_venta
     );
@@ -527,13 +533,13 @@ $$ LANGUAGE plpgsql;
 -- # 4. CREACIÓN DEL TRIGGER
 -- #############################################################################
 -- Se elimina el trigger si ya existe para poder ejecutar el script varias veces.
-DROP TRIGGER IF EXISTS T_after_insert_venta_fisica ON Venta_Física;
+DROP TRIGGER IF EXISTS T_after_insert_venta_online ON Venta_online;
 
 -- Se crea el trigger que se dispara DESPUÉS de una inserción en Venta_Física.
-CREATE TRIGGER T_after_insert_venta_fisica
-AFTER INSERT ON Venta_Física
+CREATE TRIGGER T_after_insert_venta_online
+AFTER INSERT ON Venta_online
 FOR EACH ROW -- Se ejecuta para cada fila insertada.
-EXECUTE FUNCTION F_trigger_venta_fisica_estatus();
+EXECUTE FUNCTION F_trigger_venta_online_estatus();
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
