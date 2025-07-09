@@ -458,5 +458,82 @@ Call Pregistrar_venta_tienda_fisica(
     ARRAY[1],  -- Método de pago (ID 1)
     10  -- Puntos a utilizar
 );
+
+-- Ejecutar la función
+CALL Pregistrar_venta_tienda_fisica(
+    1,  -- ID de la tienda física
+    123456789,  -- ID del usuario (cliente)
+    '2025-09-07 00:49:00',  -- Fecha y hora de la venta
+    ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
+    ARRAY[30, 25],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
+    ARRAY[1, 2],  -- Métodos de pago (IDs 1 y 2)
+    10  -- Puntos a utilizar
+);
+
+
+-- #############################################################################
+-- # 2. PROCEDIMIENTO CON LA LÓGICA PARA SER LLAMADO POR EL TRIGGER
+-- #############################################################################
+CREATE OR REPLACE PROCEDURE P_actualizar_venta_estatus(
+    p_venta_id INTEGER,
+    p_tienda_id INTEGER,
+    p_usuario_id INTEGER,
+    p_fecha_venta TIMESTAMP WITH TIME ZONE
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Este procedimiento contiene la lógica de inserción en VentaF_Estatus.
+    INSERT INTO VentaF_Estatus(
+        Venta_fisica_id,
+        Venta_Física_Tienda_Física_tienda_fisica_id,
+        Venta_Física_Usuario_usuario_id,
+        Estatus_estatus_id,
+        fecha_inicio,
+        fecha_fin
+    )
+    VALUES(
+        p_venta_id,
+        p_tienda_id,
+        p_usuario_id,
+        1, -- Se asume que 1 es el ID para el estatus 'Registrada' o similar.
+        p_fecha_venta::DATE,
+        NULL
+    );
+END;
+$$;
+
+
+-- #############################################################################
+-- # 3. FUNCIÓN INTERMEDIARIA PARA EL TRIGGER
+-- #############################################################################
+CREATE OR REPLACE FUNCTION F_trigger_venta_fisica_estatus()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Esta función solo sirve como puente para llamar al procedimiento,
+    -- pasando los datos de la fila recién insertada (NEW).
+    CALL P_actualizar_venta_estatus(
+        NEW.venta_id,
+        NEW.Tienda_Física_tienda_fisica_id,
+        NEW.Usuario_usuario_id,
+        NEW.fecha_hora_venta
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- #############################################################################
+-- # 4. CREACIÓN DEL TRIGGER
+-- #############################################################################
+-- Se elimina el trigger si ya existe para poder ejecutar el script varias veces.
+DROP TRIGGER IF EXISTS T_after_insert_venta_fisica ON Venta_Física;
+
+-- Se crea el trigger que se dispara DESPUÉS de una inserción en Venta_Física.
+CREATE TRIGGER T_after_insert_venta_fisica
+AFTER INSERT ON Venta_Física
+FOR EACH ROW -- Se ejecuta para cada fila insertada.
+EXECUTE FUNCTION F_trigger_venta_fisica_estatus();
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
