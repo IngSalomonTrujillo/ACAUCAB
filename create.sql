@@ -1,4 +1,4 @@
-CREATE TABLE Asistencia 
+ CREATE TABLE Asistencia 
     ( 
      asistencia_id           serial  NOT NULL , 
      fecha                   DATE  NOT NULL , 
@@ -286,6 +286,7 @@ ALTER TABLE Detalle_Física
 
 CREATE TABLE Detalle_Online 
     ( 
+     venta_online_id		   Integer  NOT NULL ,
      precio_unitario               decimal  NOT NULL , 
      cantidad                      INTEGER  NOT NULL , 
      Venta_Online_tienda_online_id INTEGER  NOT NULL , 
@@ -296,7 +297,7 @@ CREATE TABLE Detalle_Online
 ;
 
 ALTER TABLE Detalle_Online 
-    ADD CONSTRAINT Detalle_Online_PK PRIMARY KEY ( Inventario_inventario_id, Venta_Online_tienda_online_id, Venta_Online_usuario_id ) ;
+    ADD CONSTRAINT Detalle_Online_PK PRIMARY KEY ( venta_online_id, Inventario_inventario_id, Venta_Online_tienda_online_id, Venta_Online_usuario_id ) ;
 
 CREATE TABLE Detalle_VentaE 
     ( 
@@ -638,6 +639,7 @@ ALTER TABLE Pago_Entrada
 
 CREATE TABLE Pago_Online 
     ( 
+     venta_online_id               Integer NOT NULL ,	
      Método_Pago_método_pago_id    INTEGER  NOT NULL , 
      fecha_pago                    DATE  NOT NULL , 
      monto_pagado                  decimal  NOT NULL , 
@@ -649,7 +651,7 @@ CREATE TABLE Pago_Online
 ;
 
 ALTER TABLE Pago_Online 
-    ADD CONSTRAINT Pago_Online_PK PRIMARY KEY ( Método_Pago_método_pago_id, Venta_Online_tienda_online_id, Venta_Online_usuario_id ) ;
+    ADD CONSTRAINT Pago_Online_PK PRIMARY KEY ( venta_online_id, Método_Pago_método_pago_id, Venta_Online_tienda_online_id, Venta_Online_usuario_id ) ;
 
 CREATE TABLE Permiso 
     ( 
@@ -1013,16 +1015,16 @@ ALTER TABLE Venta_Física
 
 CREATE TABLE Venta_Online 
     ( 
+     venta_id                      SERIAL NOT NULL ,
      Tienda_Online_tienda_online_id INTEGER  NOT NULL , 
-     Usuario_usuario_id             INTEGER  NOT NULL , 
-     venta_id                       INTEGER  NOT NULL , 
+     Usuario_usuario_id             INTEGER  NOT NULL ,  
      fecha_hora_venta               TIMESTAMP WITH TIME ZONE  NOT NULL , 
      monto_total                    decimal  NOT NULL 
     ) 
 ;
 
 ALTER TABLE Venta_Online 
-    ADD CONSTRAINT Venta_Online_PK PRIMARY KEY ( Tienda_Online_tienda_online_id, Usuario_usuario_id ) ;
+    ADD CONSTRAINT Venta_Online_PK PRIMARY KEY ( venta_id, Tienda_Online_tienda_online_id, Usuario_usuario_id ) ;
 
 CREATE TABLE VentaF_Estatus 
     ( 
@@ -1041,6 +1043,7 @@ ALTER TABLE VentaF_Estatus
 
 CREATE TABLE VentaO_Estatus 
     ( 
+     venta_online_id                             INTEGER NOT NULL,
      fecha_inicio                                DATE  NOT NULL , 
      fecha_fin                                   DATE  , 
      Venta_Online_Tienda_Online_tienda_online_id INTEGER  NOT NULL ,  
@@ -1050,7 +1053,7 @@ CREATE TABLE VentaO_Estatus
 ;
 
 ALTER TABLE VentaO_Estatus 
-    ADD CONSTRAINT VentaO_Estatus_PK PRIMARY KEY ( Venta_Online_Tienda_Online_tienda_online_id, Venta_Online_Usuario_usuario_id, Estatus_estatus_id ) ;
+    ADD CONSTRAINT VentaO_Estatus_PK PRIMARY KEY ( venta_online_id, Venta_Online_Tienda_Online_tienda_online_id, Venta_Online_Usuario_usuario_id, Estatus_estatus_id ) ;
 
 CREATE TABLE Pago_Fisica 
 (
@@ -1433,7 +1436,7 @@ ALTER TABLE Detalle_Física
     ( 
      Venta_Física_tienda_fisica_id,
      Venta_Física_usuario_id,
-	 Venta_fisica_id
+     Venta_fisica_id
     ) 
     REFERENCES Venta_Física 
     ( 
@@ -1472,12 +1475,14 @@ ALTER TABLE Detalle_Online
     ADD CONSTRAINT Detalle_Online_Venta_Online_FK FOREIGN KEY 
     ( 
      Venta_Online_tienda_online_id,
-     Venta_Online_usuario_id
+     Venta_Online_usuario_id,
+     venta_online_id
     ) 
     REFERENCES Venta_Online 
     ( 
      Tienda_Online_tienda_online_id,
-     Usuario_usuario_id
+     Usuario_usuario_id,
+     venta_id
     ) 
 ;
  
@@ -1978,12 +1983,14 @@ ALTER TABLE Pago_Online
     ADD CONSTRAINT Pago_Online_Venta_Online_FK FOREIGN KEY 
     ( 
      Venta_Online_tienda_online_id,
-     Venta_Online_usuario_id
+     Venta_Online_usuario_id,
+	venta_online_id
     ) 
     REFERENCES Venta_Online 
     ( 
      Tienda_Online_tienda_online_id,
-     Usuario_usuario_id
+     Usuario_usuario_id,
+	venta_id
     ) 
 ;
 
@@ -2497,12 +2504,14 @@ ALTER TABLE VentaO_Estatus
     ADD CONSTRAINT VentaO_Estatus_Venta_Online_FK FOREIGN KEY 
     ( 
      Venta_Online_Tienda_Online_tienda_online_id,
-     Venta_Online_Usuario_usuario_id
+     Venta_Online_Usuario_usuario_id,
+	venta_online_id
     ) 
     REFERENCES Venta_Online 
     ( 
      Tienda_Online_tienda_online_id,
-     Usuario_usuario_id
+     Usuario_usuario_id,
+	venta_id
     ) 
 ;
 
