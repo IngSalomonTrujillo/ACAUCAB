@@ -4730,30 +4730,30 @@ INSERT INTO Detalle_Física (Venta_fisica_id, precio_unitario, cantidad, Venta_F
 (10,41666, 30, 5, 20, 3, 10);
 
 -- 51. Tabla Venta_Online (2 FK: Tienda_Online, Usuario)
-INSERT INTO Venta_Online (Tienda_Online_tienda_online_id, Usuario_usuario_id, venta_id, fecha_hora_venta, monto_total) VALUES
-(1, 1, 1, '2025-03-01 08:15:00', 800000),
-(1, 2, 2, '2025-03-10 10:30:00', 950000),
-(1, 3, 3, '2025-04-05 14:20:00', 1200000),
-(2, 4, 4, '2025-04-15 16:45:00', 750000),
-(2, 5, 5, '2025-05-10 11:10:00', 1100000),
-(1, 6, 6, '2025-05-20 09:30:00', 850000),
-(2, 7, 7, '2025-06-05 13:15:00', 1300000),
-(1, 8, 8, '2025-06-15 15:40:00', 900000),
-(2, 9, 9, '2025-07-01 10:25:00', 1400000),
-(1, 10, 10, '2025-07-10 12:50:00', 1250000);
+INSERT INTO Venta_Online (Tienda_Online_tienda_online_id, Usuario_usuario_id, fecha_hora_venta, monto_total) VALUES
+(1, 1,  '2025-03-01 08:15:00', 800000),
+(1, 2,  '2025-03-10 10:30:00', 950000),
+(1, 3,  '2025-04-05 14:20:00', 1200000),
+(2, 4,  '2025-04-15 16:45:00', 750000),
+(2, 5,  '2025-05-10 11:10:00', 1100000),
+(1, 6,  '2025-05-20 09:30:00', 850000),
+(2, 7,  '2025-06-05 13:15:00', 1300000),
+(1, 8,  '2025-06-15 15:40:00', 900000),
+(2, 9,  '2025-07-01 10:25:00', 1400000),
+(1, 10,  '2025-07-10 12:50:00', 1250000);
 
 -- 52. Tabla Detalle_Online (3 FK: Venta_Online, Inventario, Tasa_Cambio)
-INSERT INTO Detalle_Online (precio_unitario, cantidad, Venta_Online_tienda_online_id, Venta_Online_usuario_id, Tasa_Cambio_tasa_cambio_id, Inventario_inventario_id) VALUES
-(40000, 20, 1, 1, 1, 1),
-(47500, 20, 1, 2, 1, 2),
-(40000, 30, 1, 3, 1, 3),
-(37500, 20, 2, 4, 1, 4),
-(44000, 25, 2, 5, 1, 5),
-(42500, 20, 1, 6, 3, 6),
-(43333, 30, 2, 7, 3, 7),
-(45000, 20, 1, 8, 3, 8),
-(46666, 30, 2, 9, 3, 9),
-(41666, 30, 1, 10, 3, 10);
+INSERT INTO Detalle_Online (venta_online_id, precio_unitario, cantidad, Venta_Online_tienda_online_id, Venta_Online_usuario_id, Tasa_Cambio_tasa_cambio_id, Inventario_inventario_id) VALUES
+(1, 40000, 20, 1, 1, 1, 1),
+(2, 47500, 20, 1, 2, 1, 2),
+(3, 40000, 30, 1, 3, 1, 3),
+(4, 37500, 20, 2, 4, 1, 4),
+(5, 44000, 25, 2, 5, 1, 5),
+(6, 42500, 20, 1, 6, 3, 6),
+(7, 43333, 30, 2, 7, 3, 7),
+(8, 45000, 20, 1, 8, 3, 8),
+(9, 46666, 30, 2, 9, 3, 9),
+(10, 41666, 30, 1, 10, 3, 10);
 
 -- 53. Tabla Venta_Evento (2 FK: Proveedor, Evento)
 INSERT INTO Venta_Evento (Proveedor_proveedor_id, Evento_evento_id, cantidad, precio_unitatio_pagado, fecha_hora_venta) VALUES
@@ -4846,17 +4846,17 @@ INSERT INTO Pago_Fisica (Venta_fisica_id, fecha_pago, monto_pagado, referencia_p
 (10,'2025-07-12', 1250000, 'PAG-010', 5, 20, 14, 60000);
 
 -- 58. Tabla Pago_Online (3 FK: Venta_Online, Método_Pago)
-INSERT INTO Pago_Online (Método_Pago_método_pago_id, fecha_pago, monto_pagado, referencia_pago, Venta_Online_tienda_online_id, Venta_Online_usuario_id, puntos_usados) VALUES
-(6, '2025-03-01', 800000, 'PAG-011', 1, 1, 0),
-(7, '2025-03-10', 950000, 'PAG-012', 1, 2, 45000),
-(8, '2025-04-05', 1200000, 'PAG-013', 1, 3, 0),
-(9, '2025-04-15', 750000, 'PAG-014', 2, 4, 35000),
-(10, '2025-05-10', 1100000, 'PAG-015', 2, 5, 0),
-(11, '2025-05-20', 850000, 'PAG-016', 1, 6, 40000),
-(12, '2025-06-05', 1300000, 'PAG-017', 2, 7, 0),
-(13, '2025-06-15', 900000, 'PAG-018', 1, 8, 45000),
-(14, '2025-07-01', 1400000, 'PAG-019', 2, 9, 0),
-(15, '2025-07-10', 1250000, 'PAG-020', 1, 10, 60000);
+INSERT INTO Pago_Online (venta_online_id, Método_Pago_método_pago_id, fecha_pago, monto_pagado, referencia_pago, Venta_Online_tienda_online_id, Venta_Online_usuario_id, puntos_usados) VALUES
+(1, 6, '2025-03-01', 800000, 'PAG-011', 1, 1, 0),
+(2, 7, '2025-03-10', 950000, 'PAG-012', 1, 2, 45000),
+(3, 8, '2025-04-05', 1200000, 'PAG-013', 1, 3, 0),
+(4, 9, '2025-04-15', 750000, 'PAG-014', 2, 4, 35000),
+(5, 10, '2025-05-10', 1100000, 'PAG-015', 2, 5, 0),
+(6, 11, '2025-05-20', 850000, 'PAG-016', 1, 6, 40000),
+(7, 12, '2025-06-05', 1300000, 'PAG-017', 2, 7, 0),
+(8, 13, '2025-06-15', 900000, 'PAG-018', 1, 8, 45000),
+(9, 14, '2025-07-01', 1400000, 'PAG-019', 2, 9, 0),
+(10, 15, '2025-07-10', 1250000, 'PAG-020', 1, 10, 60000);
 
 
 
@@ -5128,17 +5128,17 @@ INSERT INTO VentaF_Estatus (Venta_fisica_id, fecha_inicio, fecha_fin, Estatus_es
 (10,'2025-04-02', '2025-04-02', 1, 5, 20);
 
 -- 74. Tabla VentaO_Estatus (3 FK: Venta_Online, Estatus)
-INSERT INTO VentaO_Estatus (fecha_inicio, fecha_fin, Estatus_estatus_id, Venta_Online_Tienda_Online_tienda_online_id, Venta_Online_Usuario_usuario_id) VALUES
-('2025-03-01', '2025-03-01', 1, 1, 1),
-('2025-03-01', '2025-03-01', 2, 1, 1),
-('2025-03-01', NULL, 3, 1, 1),
-('2025-03-10', '2025-03-10', 1, 1, 2),
-('2025-03-10', '2025-03-10', 2, 1, 2),
-('2025-03-10', NULL, 3, 1, 2),
-('2025-04-05', '2025-04-05', 1, 1, 3),
-('2025-04-05', '2025-04-05', 2, 1, 3),
-('2025-04-05', NULL, 3, 1, 3),
-('2025-04-15', '2025-04-15', 1, 2, 4);
+INSERT INTO VentaO_Estatus (venta_online_id, fecha_inicio, fecha_fin, Estatus_estatus_id, Venta_Online_Tienda_Online_tienda_online_id, Venta_Online_Usuario_usuario_id) VALUES
+(1, '2025-03-01', '2025-03-01', 1, 1, 1),
+(2, '2025-03-01', '2025-03-01', 2, 1, 2),
+(3, '2025-03-01', NULL, 3, 1, 3),
+(4, '2025-03-10', '2025-03-10', 1, 2, 4),
+(5, '2025-03-10', '2025-03-10', 2, 2, 5),
+(6, '2025-03-10', NULL, 3, 1, 6),
+(7, '2025-04-05', '2025-04-05', 1, 2, 7),
+(8, '2025-04-05', '2025-04-05', 2, 1, 8),
+(9, '2025-04-05', NULL, 3, 2, 9),
+(10, '2025-04-15', '2025-04-15', 1, 1, 10);
 
 -- 75. Tabla Vacacion_Estatus (2 FK: Vacación, Estatus)
 INSERT INTO Vacacion_Estatus (fecha_inicio, fecha_fin, Estatus_estatus_id, Vacación_vacación_id) VALUES
