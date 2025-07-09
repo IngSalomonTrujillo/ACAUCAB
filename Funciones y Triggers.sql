@@ -320,3 +320,143 @@ $$ LANGUAGE plpgsql;
     --ARRAY[1, 2],  -- Métodos de pago (IDs 1 y 2)
     --10  -- Puntos a utilizar
 --);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ CREATE OR REPLACE procedure Pregistrar_venta_tienda_fisica(
+    p_tienda_fisica_id INTEGER,
+    p_usuario_Rif INTEGER,
+    p_fecha_hora_venta TIMESTAMP WITH TIME ZONE,
+    p_productos INTEGER[], -- Array de IDs de productos
+    p_cantidades INTEGER[], -- Array de cantidades de productos
+    p_metodos_pago INTEGER[], -- Array de IDs de métodos de pago
+    p_puntos INTEGER -- Puntos que se desean utilizar
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_venta_id INTEGER;
+    v_total DECIMAL := 0;
+    v_stock_actual INTEGER;
+    v_precio_unitario DECIMAL;
+    v_puntos_disponibles INTEGER;
+	v_usuario_id INTEGER;
+	v_puntos_ganados INTEGER := 0;
+BEGIN
+    -- Verificar puntos disponibles
+    SELECT cantidad_puntos INTO v_puntos_disponibles
+    FROM Cliente_Punto
+    WHERE Cliente_RIF = p_usuario_rif
+    LIMIT 1;
+
+    IF v_puntos_disponibles < p_puntos THEN
+        RAISE EXCEPTION 'No hay suficientes puntos para realizar la venta';
+    END IF;
+
+    -- Calcular el monto total de la venta
+    FOR i IN 1..array_length(p_productos, 1) LOOP
+        -- Verificar stock en el inventario
+        SELECT cantidad_presentaciones INTO v_stock_actual
+        FROM Inventario
+        WHERE Cerveza_Presentacion_Cerveza_cerveza_id = p_productos[i] 
+          AND tienda_física_tienda_fisica_id = p_tienda_fisica_id
+          LIMIT 1;
+
+        IF v_stock_actual < p_cantidades[i] THEN
+            RAISE EXCEPTION 'No hay suficiente stock para la cerveza con ID %', p_productos[i];
+        END IF;
+
+        -- Obtener el precio unitario de la cerveza
+        SELECT precio_unitario INTO v_precio_unitario
+        FROM Cerveza_Presentacion
+        WHERE Presentación_presentación_id = p_productos[i]
+        LIMIT 1;
+
+        -- Calcular el total
+        v_total := v_total + (v_precio_unitario * p_cantidades[i]);
+    END LOOP;
+
+	  SELECT usuario_id INTO v_usuario_id
+        FROM usuario
+        WHERE cliente_rif = p_usuario_rif
+		limit 1;
+		
+		 IF v_usuario_id = NULL THEN
+        RAISE EXCEPTION 'No existe el cliente con ese rif';
+    END IF;
+
+    -- Registrar la venta en la tabla Venta_Física
+    INSERT INTO Venta_Física (Tienda_Física_tienda_fisica_id, Usuario_usuario_id, fecha_hora_venta, monto_total)
+    VALUES (p_tienda_fisica_id,v_usuario_id, p_fecha_hora_venta, v_total)
+    RETURNING venta_id INTO v_venta_id;
+	
+RAISE NOTICE 'Venta registrada con el id: %', v_venta_id;
+
+    -- Registrar los detalles de la venta
+    FOR i IN 1..array_length(p_productos, 1) LOOP
+        -- Descontar del inventario
+        UPDATE Inventario
+        SET cantidad_presentaciones = cantidad_presentaciones - p_cantidades[i]
+        WHERE Cerveza_Presentacion_Cerveza_cerveza_id = p_productos[i]
+          AND tienda_física_tienda_fisica_id = p_tienda_fisica_id;
+RAISE NOTICE 'actualize el inventario del producto %',p_productos[i];
+        -- Insertar detalle de la venta
+
+		 -- Obtener el precio unitario de la cerveza
+        SELECT precio_unitario INTO v_precio_unitario
+        FROM Cerveza_Presentacion
+        WHERE Presentación_presentación_id = p_productos[i]
+        LIMIT 1; 
+		
+        INSERT INTO Detalle_Física (venta_fisica_id, precio_unitario, cantidad, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Tasa_Cambio_tasa_cambio_id, Inventario_inventario_id)
+        VALUES (v_venta_id, v_precio_unitario, p_cantidades[i], p_tienda_fisica_id, v_usuario_id, 1, p_productos[i]); -- Asumiendo tasa de cambio 1
+    RAISE NOTICE 'inserte detalle x ';
+	END LOOP;
+
+
+      -- Registrar el pago
+    FOR i IN 1..array_length(p_metodos_pago, 1) LOOP
+        INSERT INTO Pago_Fisica (venta_fisica_id, fecha_pago, monto_pagado, referencia_pago, Venta_Física_tienda_fisica_id, Venta_Física_usuario_id, Método_Pago_método_pago_id)
+        VALUES (v_venta_id, p_fecha_hora_venta::DATE, v_total / array_length(p_metodos_pago, 1), 'PAG - 0' || v_venta_id, p_tienda_fisica_id, v_usuario_id, p_metodos_pago[i]); -- Dividir el total entre el número de métodos de pago
+    END LOOP;
+
+     -- Actualizar puntos del cliente
+	   -- Calcular los puntos ganados (por ejemplo, 1 punto por cada 100 unidades monetarias gastadas)
+    v_puntos_ganados := FLOOR(v_total / 100) - p_puntos; -- Ajusta la lógica según tus necesidades
+    UPDATE Cliente_Punto
+    SET cantidad_puntos = cantidad_puntos + v_puntos_ganados - p_puntos 
+    WHERE Cliente_RIF = p_usuario_rif;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error al registrar la venta: %', SQLERRM;
+END;
+$$;
+
+
+-- Ejecutar la función
+Call Pregistrar_venta_tienda_fisica(
+    1,  -- ID de la tienda física
+    123456789,  -- ID del usuario (cliente)
+    '2025-08-01 10:00:00',  -- Fecha y hora de la venta
+    ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
+    ARRAY[5, 3],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
+    ARRAY[1],  -- Método de pago (ID 1)
+    10  -- Puntos a utilizar
+);
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
