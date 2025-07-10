@@ -337,20 +337,22 @@ $$ LANGUAGE plpgsql;
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- CREATE OR REPLACE procedure registrar_venta_tienda_online(
+CREATE OR REPLACE procedure registrar_venta_tienda_online(
     p_tienda_online_id INTEGER,
     p_usuario_Rif INTEGER,
     p_fecha_hora_venta TIMESTAMP WITH TIME ZONE,
     p_productos INTEGER[], -- Array de IDs de productos
     p_cantidades INTEGER[], -- Array de cantidades de productos
     p_metodos_pago INTEGER[], -- Array de IDs de métodos de pago
-    p_puntos INTEGER -- Puntos que se desean utilizar
+    p_puntos INTEGER, -- Puntos que se desean utilizar
+	p_cantidad_pagada_metodo INTEGER[]
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_venta_id INTEGER;
     v_total DECIMAL := 0;
+	v_valor_total_pagado DECIMAL := 0;
     v_stock_actual INTEGER;
     v_precio_unitario DECIMAL;
     v_puntos_disponibles INTEGER;
@@ -387,9 +389,13 @@ BEGIN
         LIMIT 1;
 
         -- Calcular el total
+		v_valor_total_pagado := v_valor_total_pagado + p_cantidad_pagada_metodo[i];
         v_total := v_total + (v_precio_unitario * p_cantidades[i]);
     END LOOP;
-
+		v_valor_total_pagado := v_valor_total_pagado + p_puntos;
+	if v_valor_total_pagado != v_total then 
+  		RAISE EXCEPTION 'No se pago el valor de la compra';
+  	end if;
 	  SELECT usuario_id INTO v_usuario_id
         FROM usuario
         WHERE cliente_rif = p_usuario_rif
@@ -431,7 +437,7 @@ RAISE NOTICE 'actualize el inventario del producto %',p_productos[i];
       -- Registrar el pago
     FOR i IN 1..array_length(p_metodos_pago, 1) LOOP
         INSERT INTO Pago_online (venta_online_id, fecha_pago, monto_pagado, referencia_pago, venta_online_tienda_online_id, venta_online_usuario_id, Método_Pago_método_pago_id, puntos_usados)
-        VALUES (v_venta_id, p_fecha_hora_venta::DATE, v_total / array_length(p_metodos_pago, 1), 'PAG - 0' || v_venta_id, p_tienda_online_id, v_usuario_id, p_metodos_pago[i], p_puntos ); -- Dividir el total entre el número de métodos de pago
+        VALUES (v_venta_id, p_fecha_hora_venta::DATE, p_cantidad_pagada_metodo[i], 'PAG - 0' || v_venta_id, p_tienda_online_id, v_usuario_id, p_metodos_pago[i], p_puntos ); -- Dividir el total entre el número de métodos de pago
     END LOOP;
 
 
@@ -443,38 +449,17 @@ END;
 $$;
 
 
--- Ejecutar la función
---Call Pregistrar_venta_tienda_fisica(
-  --  1,  -- ID de la tienda física
-    --123456789,  -- ID del usuario (cliente)
-    --'2025-08-01 10:00:00',  -- Fecha y hora de la venta
-    --ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
-    --ARRAY[5, 3],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
-    --ARRAY[1],  -- Método de pago (ID 1)
-    --10  -- Puntos a utilizar
---);
-
--- Ejecutar la función
+-- Como se llama el procedimiento
 --CALL registrar_venta_tienda_online(
     --1,  -- ID de la tienda física
     --123456789,  -- ID del usuario (cliente)
     --'2025-09-07 00:49:00',  -- Fecha y hora de la venta
     --ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
-    --ARRAY[30, 25],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
+    --ARRAY[22, 11],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
     --ARRAY[1, 2],  -- Métodos de pago (IDs 1 y 2)
-    --10  -- Puntos a utilizar
+    --10,  -- Puntos a utilizar
+    --ARRAY[60, 40]
 --);
-
--- Ejecutar la función
-CALL registrar_venta_tienda_online(
-    1,  -- ID de la tienda física
-    123456789,  -- ID del usuario (cliente)
-    '2025-09-07 00:49:00',  -- Fecha y hora de la venta
-    ARRAY[1, 2],  -- IDs de productos (Destilo Amber y Benitz Pale Ale)
-    ARRAY[22, 11],  -- Cantidades de productos (5 unidades de Destilo Amber y 3 unidades de Benitz Pale Ale)
-    ARRAY[1, 2],  -- Métodos de pago (IDs 1 y 2)
-    10  -- Puntos a utilizar
-);
 
 
 -- #############################################################################
