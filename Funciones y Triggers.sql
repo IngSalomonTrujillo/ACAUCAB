@@ -526,5 +526,146 @@ AFTER INSERT ON Venta_online
 FOR EACH ROW -- Se ejecuta para cada fila insertada.
 EXECUTE FUNCTION F_trigger_venta_online_estatus();
 
+
+
+
+
+
+-- #  Orden de reposicion 
+-- #############################################################################
+-- # PASO 1: MODIFICAR LAS TABLAS PARA SOPORTAR TIENDAS ONLINE
+-- #############################################################################
+
+-- Primero, agregamos la capacidad a la tabla de órdenes de vincularse a una tienda online.
+ALTER TABLE Orden_Reposición ADD COLUMN IF NOT EXISTS tienda_online_id INTEGER;
+
+ALTER TABLE Orden_Reposición 
+ADD CONSTRAINT fk_orden_tienda_online 
+FOREIGN KEY (tienda_online_id) REFERENCES Tienda_Online(tienda_online_id);
+
+-- Hacemos que la referencia a tienda física sea opcional (nullable)
+ALTER TABLE Orden_Reposición ALTER COLUMN Tienda_Física_tienda_fisica_id DROP NOT NULL;
+
+-- Segundo, hacemos lo mismo para la tabla que vincula el inventario con la orden.
+ALTER TABLE Inventario_Orden_Reposicion ADD COLUMN IF NOT EXISTS tienda_online_id INTEGER;
+ALTER TABLE Inventario_Orden_Reposicion ALTER COLUMN tienda_fisica_id DROP NOT NULL;
+
+
+-- #############################################################################
+-- # PASO 2: CREAR LA NUEVA FUNCIÓN DE TRIGGER UNIFICADA
+-- #############################################################################
+
+CREATE OR REPLACE FUNCTION F_generar_orden_reposicion_unificada()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_orden_id INTEGER;
+    v_cantidad_reponer INTEGER := 150; -- Cantidad fija a reponer. Puedes ajustar este valor.
+    v_estatus_pendiente_id INTEGER := 1; -- ID del estatus 'Pendiente'.
+    
+    -- Datos del empleado que genera la orden (Departamento de Compras)
+    v_empleado_id INTEGER := 6;
+    v_departamento_id INTEGER := 2;
+    v_tipo_empleado_id INTEGER := 3;
+
+BEGIN
+    RAISE NOTICE '[TRIGGER] Actualización en inventario ID: %. Cantidad anterior: %, Cantidad nueva: %.', NEW.inventario_id, OLD.cantidad_presentaciones, NEW.cantidad_presentaciones;
+
+    -- La condición principal no cambia: se activa al cruzar el umbral de 100.
+    IF NEW.cantidad_presentaciones <= 100 AND OLD.cantidad_presentaciones > 100 THEN
+        
+        RAISE NOTICE '[TRIGGER] ¡Condición de stock bajo cumplida! Generando orden de reposición.';
+
+        -- Paso 2.1: Insertar la nueva orden de reposición.
+        -- Ahora es inteligente: guarda el ID de la tienda física O de la online, según corresponda.
+        INSERT INTO Orden_Reposición (
+            Tienda_Física_tienda_fisica_id,
+            tienda_online_id, -- Nueva columna
+            fecha_hora_generación,
+            cantidad_a_reponer,
+            fecha_hora_completada,
+            TipoE_Departamento_tipo_empleado_id,
+            TipoE_Departamento_departamento_id,
+            TipoE_Departamento_empleado_id
+        )
+        VALUES (
+            NEW.tienda_física_tienda_fisica_id, -- Será NULL si es tienda online
+            NEW.tienda_online_tienda_online_id, -- Será NULL si es tienda física
+            NOW(),
+            v_cantidad_reponer,
+            NULL,
+            v_tipo_empleado_id,
+            v_departamento_id,
+            v_empleado_id
+        )
+        RETURNING orden_reposición_id INTO v_orden_id;
+
+        RAISE NOTICE '[TRIGGER] Orden de reposición N° % creada.', v_orden_id;
+
+        -- Paso 2.2: Insertar el estatus inicial ('Pendiente') para la orden.
+        INSERT INTO OrdenR_Estatus (
+            Orden_Reposición_orden_reposición_id, Estatus_estatus_id, fecha_inicio, fecha_fin
+        ) VALUES (
+            v_orden_id, v_estatus_pendiente_id, NOW(), NULL
+        );
+
+        RAISE NOTICE '[TRIGGER] Estatus ''Pendiente'' registrado para la orden N° %.', v_orden_id;
+        
+        -- Paso 2.3: Vincular el item del inventario con la orden en la tabla intermedia.
+        -- También es inteligente y guarda el ID de la tienda correcta.
+        INSERT INTO Inventario_Orden_Reposicion(
+            inventario_id,
+            orden_reposición_id,
+            tienda_fisica_id,
+            tienda_online_id, -- Nueva columna
+            cerveza_id,
+            presentacion_id,
+            cantidad
+        ) VALUES (
+            NEW.inventario_id,
+            v_orden_id,
+            NEW.tienda_física_tienda_fisica_id,
+            NEW.tienda_online_tienda_online_id,
+            NEW.Cerveza_Presentacion_Cerveza_cerveza_id,
+            NEW.Cerveza_Presentacion_Presentación_presentación_id,
+            v_cantidad_reponer
+        );
+        
+        RAISE NOTICE '[TRIGGER] Vínculo creado entre inventario ID % y orden N° %.', NEW.inventario_id, v_orden_id;
+
+    ELSE
+        RAISE NOTICE '[TRIGGER] La condición de stock bajo no se cumplió. No se genera orden.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- #############################################################################
+-- # PASO 3: RECREAR EL TRIGGER PARA QUE USE LA NUEVA FUNCIÓN
+-- #############################################################################
+
+-- Se elimina el trigger anterior si existe.
+DROP TRIGGER IF EXISTS T_control_stock_reposicion ON Inventario;
+
+-- Se crea el nuevo trigger que apunta a la función unificada.
+CREATE TRIGGER T_control_stock_reposicion
+AFTER UPDATE ON Inventario
+FOR EACH ROW
+EXECUTE FUNCTION F_generar_orden_reposicion_unificada();
+
+-- #############################################################################
+-- # PASO 4: SINCRONIZAR LA SECUENCIA DE LA LLAVE PRIMARIA (SOLUCIÓN AL ERROR)
+-- #############################################################################
+-- NOTA: Este paso es crucial porque los datos de ejemplo insertan manualmente
+-- los IDs, lo que desincroniza el contador automático (la secuencia).
+-- Este comando ajusta el contador al valor máximo actual en la tabla,
+-- evitando errores de "llave duplicada" en futuras inserciones automáticas.
+SELECT setval(
+    pg_get_serial_sequence('orden_reposición', 'orden_reposición_id'),
+    (SELECT MAX(orden_reposición_id) FROM Orden_Reposición)
+);
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
