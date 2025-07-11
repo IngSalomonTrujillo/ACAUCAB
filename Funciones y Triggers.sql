@@ -786,5 +786,72 @@ $$;
     --p_nuevo_estatus_id => 3 -- 3 para cambiar el estatus a (completado), tambien inserta en el inventario
 --);
 
+
+
+-- ACTUALIZAR EL ESTATUS DE VENTAO_ESTATUS 
+CREATE OR REPLACE PROCEDURE P_actualizar_venta_online_estatus(
+    p_venta_online_id INTEGER,
+    p_nuevo_estatus_id INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_rows_affected INTEGER;
+BEGIN
+    -- PASO 1: Validar que el nuevo estatus sea uno de los permitidos para esta operación.
+    IF p_nuevo_estatus_id NOT IN (2, 3, 4, 5) THEN
+        RAISE EXCEPTION 'El estatus ID % no es válido. Los valores permitidos son 2, 3, 4, 5.', p_nuevo_estatus_id;
+    END IF;
+
+    -- PASO 2: Actualizar directamente el registro de estatus existente.
+    -- La lógica para la fecha_fin se maneja con una expresión CASE.
+    UPDATE VentaO_Estatus
+    SET
+        estatus_estatus_id = p_nuevo_estatus_id,
+        -- Se actualiza la fecha de inicio para reflejar cuándo comenzó el *nuevo* estado.
+        fecha_inicio = NOW(),
+        -- Si el nuevo estado es final (Completado, Cancelado, etc.), se registra la fecha de fin.
+        -- Si es un estado intermedio (En Proceso), la fecha de fin se deja en NULL.
+        fecha_fin = CASE
+                        WHEN p_nuevo_estatus_id IN (3, 4, 5) THEN NOW()
+                        ELSE NULL
+                    END
+    WHERE venta_online_id = p_venta_online_id;
+
+    -- PASO 3: Verificar que la actualización se haya realizado.
+    -- GET DIAGNOSTICS obtiene información sobre la última consulta ejecutada.
+    GET DIAGNOSTICS v_rows_affected = ROW_COUNT;
+
+    IF v_rows_affected = 0 THEN
+        -- Si no se actualizó ninguna fila, significa que no existía un registro para esa venta.
+        RAISE EXCEPTION 'No se encontró un registro de estatus para la venta online con ID %.', p_venta_online_id;
+    END IF;
+
+    RAISE NOTICE 'El estatus de la venta online % fue actualizado a %.', p_venta_online_id, p_nuevo_estatus_id;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Captura cualquier otro error y lo muestra.
+        RAISE NOTICE 'Ocurrió un error al actualizar el estatus de la venta: %', SQLERRM;
+        RAISE;
+END;
+$$;
+
+-- ASUMIENDO QUE LA VENTA 1 EXISTE Y TIENE EL ESTATUS 1 (REGISTRADA)
+
+-- 1. Mover la venta al estado "En Proceso" (ID 2)
+-- La fila en VentaO_Estatus se actualizará a estatus_id = 2 y fecha_fin = NULL.
+CALL P_actualizar_venta_online_estatus(
+    p_venta_online_id => 18,
+    p_nuevo_estatus_id => 2
+);
+
+-- 2. Mover la venta al estado "Completado" (ID 3)
+-- La misma fila ahora se actualizará a estatus_id = 3 y fecha_fin se establecerá a la hora actual.
+CALL P_actualizar_venta_online_estatus(
+    p_venta_online_id => 19,
+    p_nuevo_estatus_id => 3
+);
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
