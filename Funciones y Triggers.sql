@@ -667,5 +667,124 @@ SELECT setval(
 );
 
 
+
+-- PROCEDIMIENTO PARA CAMBIAR EL ESTATUS DE LA ORDEN DE REPOSICION
+CREATE OR REPLACE PROCEDURE P_actualizar_estado_orden_reposicion(
+    p_orden_reposicion_id INTEGER,
+    p_nueva_cantidad INTEGER,
+    p_nuevo_estatus_id INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_inventario_orden_rec RECORD;
+    v_orden_rec RECORD;
+BEGIN
+    -- PASO 1: Validar que la orden de reposición exista.
+    SELECT * INTO v_orden_rec
+    FROM Orden_Reposición
+    WHERE orden_reposición_id = p_orden_reposicion_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'La orden de reposición con ID % no existe.', p_orden_reposicion_id;
+    END IF;
+
+    -- PASO 2: Cerrar el estatus actual de la orden poniendo la fecha de fin.
+    -- Esto asegura que solo haya un estatus activo a la vez.
+    UPDATE OrdenR_Estatus
+    SET fecha_fin = NOW()
+    WHERE Orden_Reposición_orden_reposición_id = p_orden_reposicion_id
+      AND fecha_fin IS NULL;
+
+    -- PASO 3: Lógica condicional basada en el nuevo estatus.
+
+    -- ESTATUS 2: 'En Proceso' o 'Aprobado'
+    IF p_nuevo_estatus_id = 2 THEN
+        RAISE NOTICE 'Procesando orden % con estatus 2 (En Proceso).', p_orden_reposicion_id;
+
+        -- Si se proporciona una nueva cantidad (diferente de 0), se actualizan las tablas.
+        IF p_nueva_cantidad > 0 THEN
+            UPDATE Orden_Reposición
+            SET cantidad_a_reponer = p_nueva_cantidad
+            WHERE orden_reposición_id = p_orden_reposicion_id;
+
+            UPDATE Inventario_Orden_Reposicion
+            SET cantidad = p_nueva_cantidad
+            WHERE orden_reposición_id = p_orden_reposicion_id;
+
+            RAISE NOTICE 'Cantidad de la orden % actualizada a %.', p_orden_reposicion_id, p_nueva_cantidad;
+        ELSE
+            RAISE NOTICE 'No se especificó una nueva cantidad. La cantidad de la orden no se modifica.';
+        END IF;
+
+        -- Insertar el nuevo estatus 'En Proceso', dejándolo activo (fecha_fin es NULL).
+        INSERT INTO OrdenR_Estatus (Orden_Reposición_orden_reposición_id, Estatus_estatus_id, fecha_inicio, fecha_fin)
+        VALUES (p_orden_reposicion_id, p_nuevo_estatus_id, NOW(), NULL);
+
+    -- ESTATUS 3: 'Completado'
+    ELSIF p_nuevo_estatus_id = 3 THEN
+        RAISE NOTICE 'Procesando orden % con estatus 3 (Completado).', p_orden_reposicion_id;
+
+        -- Obtener los detalles del inventario y la cantidad desde la tabla de relación.
+        SELECT inventario_id, cantidad
+        INTO v_inventario_orden_rec
+        FROM Inventario_Orden_Reposicion
+        WHERE orden_reposición_id = p_orden_reposicion_id;
+
+        -- Incrementar el stock en la tabla de Inventario.
+        UPDATE Inventario
+        SET cantidad_presentaciones = cantidad_presentaciones + v_inventario_orden_rec.cantidad
+        WHERE inventario_id = v_inventario_orden_rec.inventario_id;
+
+        RAISE NOTICE 'Se agregaron % unidades al inventario ID %.', v_inventario_orden_rec.cantidad, v_inventario_orden_rec.inventario_id;
+
+        -- Insertar el nuevo estatus 'Completado' y cerrarlo inmediatamente (es un estado final).
+        INSERT INTO OrdenR_Estatus (Orden_Reposición_orden_reposición_id, Estatus_estatus_id, fecha_inicio, fecha_fin)
+        VALUES (p_orden_reposicion_id, p_nuevo_estatus_id, NOW(), NOW());
+        
+        -- También se actualiza la fecha de completado en la tabla principal de la orden.
+        UPDATE Orden_Reposición
+        SET fecha_hora_completada = NOW()
+        WHERE orden_reposición_id = p_orden_reposicion_id;
+
+    -- ESTATUS 4 o 5: 'Cancelado' o 'Rechazado'
+    ELSIF p_nuevo_estatus_id IN (4, 5) THEN
+        RAISE NOTICE 'Procesando orden % con estatus % (Estado Final).', p_orden_reposicion_id, p_nuevo_estatus_id;
+
+        -- Insertar el nuevo estatus y cerrarlo inmediatamente, ya que son estados finales.
+        INSERT INTO OrdenR_Estatus (Orden_Reposición_orden_reposición_id, Estatus_estatus_id, fecha_inicio, fecha_fin)
+        VALUES (p_orden_reposicion_id, p_nuevo_estatus_id, NOW(), NOW());
+
+    ELSE
+        -- Si el ID de estatus no es válido, se lanza un error.
+        RAISE EXCEPTION 'El estatus ID % no es válido. Los valores permitidos son 2, 3, 4, 5.', p_nuevo_estatus_id;
+    END IF;
+
+    RAISE NOTICE 'La orden % ha sido actualizada exitosamente al estatus %.', p_orden_reposicion_id, p_nuevo_estatus_id;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Ocurrió un error inesperado al actualizar la orden: %', SQLERRM;
+        RAISE; -- Re-lanza la excepción para detener la transacción.
+END;
+$$;
+
+--CALL P_actualizar_estado_orden_reposicion(
+    --p_orden_reposicion_id => 11,
+    --p_nueva_cantidad => 400, -- Nueva cantidad deseada
+   -- p_nuevo_estatus_id => 2 -- 2 para cambiar el estatus a (en proceso) 
+--);
+--CALL P_actualizar_estado_orden_reposicion(
+    --p_orden_reposicion_id => 11,
+   -- p_nueva_cantidad => 0, -- 0 para no cambiar la cantidad
+   -- p_nuevo_estatus_id => 2 -- 2 para cambiar el estatus a (en proceso) 
+--);
+
+--CALL P_actualizar_estado_orden_reposicion(
+    --p_orden_reposicion_id => 1,
+    --p_nueva_cantidad => 0, -- Se ignora para el estatus 3
+    --p_nuevo_estatus_id => 3 -- 3 para cambiar el estatus a (completado), tambien inserta en el inventario
+--);
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------PRUEBA------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
