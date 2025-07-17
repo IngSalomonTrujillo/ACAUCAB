@@ -1,0 +1,77 @@
+/* Estilos para el modal de eventos */
+#evento-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: rgba(0,0,0,0.4);
+}
+#evento-modal .modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 32px 28px 24px 28px;
+  border-radius: 16px;
+  max-width: 480px;
+  min-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  border: 1.5px solid #e0e0e0;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+#evento-modal .close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+#evento-modal .close:hover {
+  color: #e74c3c;
+}
+#evento-modal .form-group {
+  margin-bottom: 18px;
+}
+#evento-modal label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+#evento-modal input[type="text"],
+#evento-modal input[type="date"],
+#evento-modal input[type="number"],
+#evento-modal textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+#evento-modal textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+#evento-modal button[type="submit"] {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px 0;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#evento-modal button[type="submit"]:hover {
+  background: #4c51bf;
+} 

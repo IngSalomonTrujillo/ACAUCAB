@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Tienda Online de Cervezas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/tienda.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>ACAUCAB</h1>
+                <p>Tienda Online de Cervezas Artesanales</p>
+            </div>
+            <div class="header-actions">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Buscar cervezas...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                <button class="btn btn-primary" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cartCount">0</span>
+                </button>
+                <button class="btn btn-info" id="eventosBtn">
+                    <i class="fas fa-calendar-alt"></i>
+                    Ver eventos
+                </button>
+                <button class="btn btn-secondary" id="profileBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">Mi Cuenta</span>
+                </button>
+                <button class="btn btn-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="filters-section">
+        <div class="filters-content">
+            <div class="filter-group">
+                <label for="categoryFilter">Categoría:</label>
+                <select id="categoryFilter">
+                    <option value="">Todas las categorías</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="priceFilter">Precio:</label>
+                <select id="priceFilter">
+                    <option value="">Todos los precios</option>
+                    <option value="0-50000">Menos de $50.000</option>
+                    <option value="50000-100000">$50.000 - $100.000</option>
+                    <option value="100000-200000">$100.000 - $200.000</option>
+                    <option value="200000+">Más de $200.000</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sortFilter">Ordenar por:</label>
+                <select id="sortFilter">
+                    <option value="nombre">Nombre</option>
+                    <option value="precio_asc">Precio: Menor a Mayor</option>
+                    <option value="precio_desc">Precio: Mayor a Menor</option>
+                    <option value="categoria">Categoría</option>
+                    <option value="stock">Más Stock</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="clearFiltersBtn">
+                <i class="fas fa-times"></i>
+                Limpiar Filtros
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Cargando productos...</p>
+        </div>
+
+        <!-- Grid de Productos -->
+        <div id="productsGrid" class="products-grid">
+            <!-- Los productos se cargarán dinámicamente -->
+        </div>
+
+        <!-- Paginación -->
+        <div id="pagination" class="pagination">
+            <!-- La paginación se generará dinámicamente -->
+        </div>
+
+        <!-- Mensaje de no productos -->
+        <div id="noProducts" class="no-products" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No se encontraron productos</h3>
+            <p>Intenta ajustar los filtros o buscar con otros términos.</p>
+        </div>
+    </main>
+
+    <!-- Carrito Lateral -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Carrito de Compras</h3>
+            <button class="close-cart" id="closeCart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Los items del carrito se cargarán dinámicamente -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-summary">
+                <div class="cart-total">
+                    <strong>Total: $<span id="cartTotal">0.00</span></strong>
+                </div>
+                <div class="cart-points" id="cartPoints" style="display: none;">
+                    <small>Puntos disponibles: <span id="availablePoints">0</span></small>
+                </div>
+            </div>
+            <button class="btn btn-success btn-full" id="checkoutBtn" disabled>
+                <i class="fas fa-credit-card"></i>
+                Proceder al Pago
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Producto -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div id="modalBody">
+                <!-- El contenido del modal se cargará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Checkout -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content checkout-modal">
+            <span class="close" id="closeCheckoutModal">&times;</span>
+            <h2>Finalizar Compra</h2>
+            <form id="checkoutForm">
+                <div id="orderItems"></div>
+                <div class="order-total-row">
+                    <span>Total:</span>
+                    <span class="order-total">$<span id="orderTotal"></span></span>
+                </div>
+                <hr>
+                <h3>Métodos de Pago</h3>
+                <div id="metodosPagoContainer">
+                    <div class="metodo-grupo"><strong>Efectivo</strong>
+                        <div style="margin-left:16px; margin-bottom:6px;">
+                            <label>Divisa:
+                                <select id="efectivoDivisa">
+                                    <option value="VES">VES</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                </select>
+                            </label>
+                            <input type="number" class="montoMetodo" id="monto_efectivo" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                        </div>
+                    </div>
+                    <div class="metodo-grupo"><strong>Débito</strong>
+                        <div style="margin-left:16px; margin-bottom:6px;">
+                            <label>Banco: <input type="text" id="debitoBanco" placeholder="Banco" style="width:100px;"></label>
+                            <label>Cuenta: <input type="text" id="debitoCuenta" placeholder="Cuenta" style="width:100px;"></label>
+                            <label>Tarjeta: <input type="text" id="debitoTarjeta" placeholder="N° Tarjeta" style="width:100px;"></label>
+                            <input type="number" class="montoMetodo" id="monto_debito" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                        </div>
+                    </div>
+                    <div class="metodo-grupo"><strong>Crédito</strong>
+                        <div style="margin-left:16px; margin-bottom:6px;">
+                            <label>Banco: <input type="text" id="creditoBanco" placeholder="Banco" style="width:100px;"></label>
+                            <label>Cuenta: <input type="text" id="creditoCuenta" placeholder="Cuenta" style="width:100px;"></label>
+                            <label>Tarjeta: <input type="text" id="creditoTarjeta" placeholder="N° Tarjeta" style="width:100px;"></label>
+                            <input type="number" class="montoMetodo" id="monto_credito" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                        </div>
+                    </div>
+                    <div class="metodo-grupo"><strong>Cheque</strong>
+                        <div style="margin-left:16px; margin-bottom:6px;">
+                            <label>Banco: <input type="text" id="chequeBanco" placeholder="Banco" style="width:100px;"></label>
+                            <label>N° Cuenta: <input type="text" id="chequeCuenta" placeholder="N° Cuenta" style="width:100px;"></label>
+                            <label>N° Cheque: <input type="text" id="chequeNumero" placeholder="N° Cheque" style="width:100px;"></label>
+                            <input type="number" class="montoMetodo" id="monto_cheque" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                        </div>
+                    </div>
+                    <div class="metodo-grupo"><strong>Punto (Puntos de fidelidad)</strong>
+                        <div style="margin-left:16px; margin-bottom:6px;">
+                            <input type="number" class="montoMetodo" id="monto_punto" placeholder="Puntos a usar" min="0" step="1" style="width:100px;">
+                        </div>
+                    </div>
+                </div>
+                <div id="pagosResumen"></div>
+                <div id="pagoError" class="form-error"></div>
+                <hr>
+                <div id="pointsSection" style="display: none;">
+                    <label for="pointsToUse">Puntos a usar:</label>
+                    <input type="number" id="pointsToUse" min="0" value="0" step="1">
+                    <span>Disponibles: <span id="checkoutPoints">0</span></span>
+                </div>
+                <label for="shippingAddress">Dirección de envío:</label>
+                <input type="text" id="shippingAddress" required>
+                <label for="shippingPhone">Teléfono de contacto:</label>
+                <input type="text" id="shippingPhone" required>
+                <div class="checkout-actions">
+                    <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                    <button type="button" class="btn btn-secondary" id="cancelCheckout">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeProfileModal">&times;</span>
+            <div class="profile-content">
+                <h2>Mi Perfil</h2>
+                <div class="profile-info">
+                    <div class="profile-section">
+                        <h3>Información Personal</h3>
+                        <div id="userInfo">
+                            <!-- Información del usuario se cargará dinámicamente -->
+                        </div>
+                    </div>
+                    <div class="profile-section">
+                        <h3>Mis Pedidos</h3>
+                        <div id="userOrders">
+                            <!-- Historial de pedidos se cargará dinámicamente -->
+                        </div>
+                    </div>
+                    <div class="profile-section">
+                        <h3>Puntos de Fidelidad</h3>
+                        <div id="userPoints">
+                            <!-- Puntos se cargarán dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+    <script src="tienda.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const eventosBtn = document.getElementById('eventosBtn');
+        if (eventosBtn) {
+          eventosBtn.addEventListener('click', function() {
+            window.location.href = 'eventos.html';
+          });
+        }
+      });
+    </script>
+</body>
+</html> 

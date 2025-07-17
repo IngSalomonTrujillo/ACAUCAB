@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Panel de Usuario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/dashboard-styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-beer"></i> ACAUCAB</h2>
+                <p>Panel de Usuario</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li><a href="#" class="menu-item active" data-section="resumen">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Resumen
+                    </a></li>
+                    <li><a href="#" class="menu-item" data-section="pedidos">
+                        <i class="fas fa-shopping-bag"></i>
+                        Mis Pedidos
+                    </a></li>
+                    <li><a href="#" class="menu-item" data-section="puntos">
+                        <i class="fas fa-star"></i>
+                        Mis Puntos
+                    </a></li>
+                    <li><a href="#" class="menu-item" data-section="favoritos">
+                        <i class="fas fa-heart"></i>
+                        Favoritos
+                    </a></li>
+                    <li><a href="#" class="menu-item" data-section="perfil">
+                        <i class="fas fa-user"></i>
+                        Mi Perfil
+                    </a></li>
+                    <li><a href="#" class="menu-item" data-section="productos">
+                        <i class="fas fa-beer"></i>
+                        Productos
+                    </a></li>
+                    <li><a href="reports.html" class="menu-item">
+                        <i class="fas fa-chart-bar"></i>
+                        Reportes
+                    </a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="content-header">
+                <div class="header-left">
+                    <h1 id="page-title">Resumen</h1>
+                    <p id="user-info">Cargando información del usuario...</p>
+                </div>
+                <div class="header-right">
+                    <button id="refresh-btn" class="btn btn-secondary">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar
+                </button>
+                    <button id="logoutBtn" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+                </div>
+                
+            <!-- Resumen Section -->
+            <div id="resumen-section" class="content-section active">
+                            <div class="dashboard-welcome">
+                                <h2>¡Hola, <span id="welcomeUserName">Usuario</span>!</h2>
+                    <p>Bienvenido a tu panel de usuario de ACAUCAB</p>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                        <div class="stat-content">
+                            <h3 id="total-pedidos">0</h3>
+                                        <p>Pedidos Realizados</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                        <div class="stat-content">
+                            <h3 id="total-puntos">0</h3>
+                                        <p>Puntos Acumulados</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                        <div class="stat-content">
+                            <h3 id="total-favoritos">0</h3>
+                                        <p>Productos Favoritos</p>
+                                    </div>
+                                </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-beer"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-productos">0</h3>
+                            <p>Productos Disponibles</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                <div class="recent-section">
+                                <div class="section-header">
+                        <h2>Pedidos Recientes</h2>
+                        <button class="btn btn-primary" onclick="dashboardPanel.showSection('pedidos')">
+                            Ver Todos
+                        </button>
+                                </div>
+                                
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <h4>No tienes pedidos recientes</h4>
+                                    <p>Cuando realices un pedido, aparecerá aquí.</p>
+                        <button class="btn btn-primary" onclick="dashboardPanel.showSection('productos')">
+                            Explorar Productos
+                        </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+            <!-- Pedidos Section -->
+            <div id="pedidos-section" class="content-section">
+                <div class="section-header">
+                    <h2>Mis Pedidos</h2>
+                </div>
+                
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <h4>No tienes pedidos</h4>
+                    <p>Aún no has realizado ningún pedido.</p>
+                    <button class="btn btn-primary" onclick="dashboardPanel.showSection('productos')">
+                        Hacer mi Primer Pedido
+                    </button>
+                </div>
+            </div>
+
+            <!-- Puntos Section -->
+            <div id="puntos-section" class="content-section">
+                <div class="section-header">
+                    <h2>Mis Puntos</h2>
+                </div>
+                
+                <div class="puntos-info">
+                    <div class="puntos-card">
+                        <div class="puntos-header">
+                            <h3>Puntos Acumulados</h3>
+                            <div class="puntos-total">
+                                <span id="puntos-actuales">0</span>
+                                <small>puntos</small>
+                            </div>
+                        </div>
+                        <div class="puntos-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <p>0 / 100 puntos para el siguiente nivel</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favoritos Section -->
+            <div id="favoritos-section" class="content-section">
+                <div class="section-header">
+                    <h2>Mis Favoritos</h2>
+                </div>
+                
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h4>No tienes favoritos</h4>
+                    <p>Aún no has agregado productos a tus favoritos.</p>
+                    <button class="btn btn-primary" onclick="dashboardPanel.showSection('productos')">
+                        Explorar Productos
+                    </button>
+                </div>
+            </div>
+
+            <!-- Perfil Section -->
+            <div id="perfil-section" class="content-section">
+                <div class="section-header">
+                    <h2>Mi Perfil</h2>
+                    <button class="btn btn-primary" onclick="dashboardPanel.editProfile()">
+                        <i class="fas fa-edit"></i>
+                        Editar Perfil
+                    </button>
+                </div>
+                
+                <div class="profile-info">
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-details">
+                            <h3 id="profile-name">Nombre de Usuario</h3>
+                            <p id="profile-email">usuario@ejemplo.com</p>
+                            <p id="profile-type">Tipo de Cliente: Persona Natural</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos Section -->
+            <div id="productos-section" class="content-section">
+                <div class="section-header">
+                    <h2>Productos Disponibles</h2>
+                    <button class="btn btn-primary" onclick="window.location.href='products.html'">
+                        <i class="fas fa-external-link-alt"></i>
+                        Ver Catálogo Completo
+                    </button>
+                </div>
+                
+                <div class="products-preview">
+                    <p>Explora nuestro catálogo completo de cervezas artesanales.</p>
+                    <button class="btn btn-primary" onclick="window.location.href='products.html'">
+                        Ir a Productos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicadores y Gráficos del Dashboard -->
+    <div id="dashboard-indicators" class="content-section">
+        <h2>Indicadores de Ventas</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="ventas-totales">$0</h3>
+                    <p>Ventas Totales (por tienda)</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="crecimiento-ventas">0%</h3>
+                    <p>Crecimiento de Ventas</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="ticket-promedio">$0</h3>
+                    <p>Ticket Promedio (VMP)</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="volumen-unidades">0</h3>
+                    <p>Volumen de Unidades Vendidas</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="ventas-estilo">-</h3>
+                    <p>Ventas por Estilo de Cerveza</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>Indicadores de Clientes</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="clientes-nuevos">0</h3>
+                    <p>Clientes Nuevos</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="clientes-recurrentes">0</h3>
+                    <p>Clientes Recurrentes</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="tasa-retencion">0%</h3>
+                    <p>Tasa de Retención de Clientes</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>Indicadores de Inventario y Operaciones</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="rotacion-inventario">0</h3>
+                    <p>Rotación de Inventario</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="stockout-rate">0%</h3>
+                    <p>Tasa de Ruptura de Stock</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-content">
+                    <h3 id="ventas-empleado">0</h3>
+                    <p>Ventas por Empleado</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>Reportes Clave</h2>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4>Gráfico de Tendencia de Ventas</h4>
+                <canvas id="grafico-tendencia-ventas"></canvas>
+            </div>
+            <div class="chart-card">
+                <h4>Ventas por Canal de Distribución</h4>
+                <canvas id="grafico-canal-distribucion"></canvas>
+            </div>
+            <div class="chart-card">
+                <h4>Top 10 Productos Más Vendidos</h4>
+                <table id="tabla-top-productos">
+                    <thead>
+                        <tr><th>Producto</th><th>Unidades Vendidas</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="chart-card">
+                <h4>Reporte de Inventario Actual</h4>
+                <table id="tabla-inventario-actual">
+                    <thead>
+                        <tr><th>Producto</th><th>Stock</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Fin indicadores dashboard -->
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script src="auth.js"></script>
+    <script src="dashboard-script.js"></script>
+</body>
+</html>

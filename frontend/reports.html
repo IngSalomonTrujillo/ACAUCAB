@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Acaucab</title>
+    <link rel="stylesheet" href="styles/reports.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-chart-bar"></i> Generador de Reportes</h1>
+            <p>Sistema de gestión Acaucab</p>
+        </header>
+
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="products.html" class="nav-link"><i class="fas fa-box"></i> Productos</a>
+            <a href="admin.html" class="nav-link"><i class="fas fa-cog"></i> Administración</a>
+            <a href="reports.html" class="nav-link active"><i class="fas fa-chart-bar"></i> Reportes</a>
+            <button id="logoutBtn" class="nav-link logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+        </nav>
+
+        <main class="main">
+            <!-- Filtros de fecha -->
+            <div class="filters-section">
+                <h3><i class="fas fa-filter"></i> Filtros de Fecha</h3>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="startDate">Fecha Inicio:</label>
+                        <input type="date" id="startDate" class="filter-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="endDate">Fecha Fin:</label>
+                        <input type="date" id="endDate" class="filter-input">
+                    </div>
+                    <div class="filter-group">
+                        <button id="applyFilters" class="btn-apply">
+                            <i class="fas fa-check"></i> Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reportes de Ventas -->
+            <section class="reports-section">
+                <h2><i class="fas fa-shopping-cart"></i> Reportes de Ventas</h2>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Tendencias de Ventas</h3>
+                            <p>Análisis de tendencias de ventas por período con gráficos de evolución.</p>
+                            <button class="btn-generate" onclick="generateReport('tendencias-ventas')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Ventas por Canal</h3>
+                            <p>Comparación de ventas físicas vs online con análisis de rendimiento.</p>
+                            <button class="btn-generate" onclick="generateReport('ventas-canal')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Productos Top</h3>
+                            <p>Ranking de productos más vendidos con análisis de rendimiento.</p>
+                            <button class="btn-generate" onclick="generateReport('productos-top')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Reporte de Ventas</h3>
+                            <p>Historial completo de ventas realizadas con detalles de productos y clientes.</p>
+                            <button class="btn-generate" onclick="generateReport('ventas')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reportes de Inventario -->
+            <section class="reports-section">
+                <h2><i class="fas fa-boxes"></i> Reportes de Inventario</h2>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Reporte de Inventario</h3>
+                            <p>Muestra el estado actual del inventario con cantidades y valores totales de cada producto.</p>
+                            <button class="btn-generate" onclick="generateReport('inventario')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-rotate"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Rotación de Inventario</h3>
+                            <p>Análisis de rotación de productos y productos de lento movimiento.</p>
+                            <button class="btn-generate" onclick="generateReport('rotacion-inventario')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reportes de Clientes -->
+            <section class="reports-section">
+                <h2><i class="fas fa-users"></i> Reportes de Clientes</h2>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Reporte de Clientes</h3>
+                            <p>Lista completa de clientes registrados en el sistema con información de contacto.</p>
+                            <button class="btn-generate" onclick="generateReport('clientes')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Análisis de Clientes</h3>
+                            <p>Análisis de clientes nuevos vs recurrentes y tasa de retención.</p>
+                            <button class="btn-generate" onclick="generateReport('analisis-clientes')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reportes de Empleados -->
+            <section class="reports-section">
+                <h2><i class="fas fa-user-tie"></i> Reportes de Empleados</h2>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Reporte de Empleados</h3>
+                            <p>Lista de empleados con información de contacto y roles asignados.</p>
+                            <button class="btn-generate" onclick="generateReport('empleados')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Ventas por Empleado</h3>
+                            <p>Análisis de rendimiento de ventas por empleado.</p>
+                            <button class="btn-generate" onclick="generateReport('ventas-empleado')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reportes de Puntos y Canjes -->
+            <section class="reports-section">
+                <h2><i class="fas fa-gift"></i> Reportes de Puntos y Canjes</h2>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Puntos Canjeados</h3>
+                            <p>Reporte de puntos canjeados por clientes y productos redimidos.</p>
+                            <button class="btn-generate" onclick="generateReport('puntos-canjeados')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Flujo de Pago</h3>
+                            <p>Análisis del flujo de pagos y métodos de pago utilizados.</p>
+                            <button class="btn-generate" onclick="generateReport('flujo-pago')">
+                                <i class="fas fa-download"></i> Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <p>Generando reporte...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="reports.js"></script>
+</body>
+</html> 

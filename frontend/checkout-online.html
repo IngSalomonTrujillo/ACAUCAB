@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Checkout Online</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/checkout.css">
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-beer"></i>
+                    <h1>ACAUCAB</h1>
+                </div>
+                <h2>Finalizar Compra Online</h2>
+            </div>
+            <div class="checkout-steps">
+                <div class="step completed">
+                    <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <span>Carrito</span>
+                </div>
+                <div class="step active">
+                    <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                    <span>Pago</span>
+                </div>
+                <div class="step">
+                    <div class="step-icon"><i class="fas fa-check"></i></div>
+                    <span>Confirmación</span>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="checkout-grid">
+                <!-- Checkout Form -->
+                <div class="checkout-form">
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-user"></i> Datos de Envío</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="shippingAddress">Dirección de envío:</label>
+                            <input type="text" id="shippingAddress" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="shippingPhone">Teléfono de contacto:</label>
+                            <input type="text" id="shippingPhone" required>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3><i class="fas fa-credit-card"></i> Métodos de Pago</h3>
+                        </div>
+                        <div id="metodosPagoCont">
+                            <div class="metodo-grupo"><strong>Efectivo</strong>
+                                <div style="margin-left:16px; margin-bottom:6px;">
+                                    <label>Divisa:
+                                        <select id="efectivoDivisa">
+                                            <option value="VES">VES</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>
+                                    </label>
+                                    <input type="number" class="montoMetodo" id="monto_efectivo" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                                </div>
+                            </div>
+                            <div class="metodo-grupo"><strong>Débito</strong>
+                                <div style="margin-left:16px; margin-bottom:6px;">
+                                    <label>Banco: <input type="text" id="debitoBanco" placeholder="Banco" style="width:100px;"></label>
+                                    <label>Cuenta: <input type="text" id="debitoCuenta" placeholder="Cuenta" style="width:100px;"></label>
+                                    <label>Tarjeta: <input type="text" id="debitoTarjeta" placeholder="N° Tarjeta" style="width:100px;"></label>
+                                    <input type="number" class="montoMetodo" id="monto_debito" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                                </div>
+                            </div>
+                            <div class="metodo-grupo"><strong>Crédito</strong>
+                                <div style="margin-left:16px; margin-bottom:6px;">
+                                    <label>Banco: <input type="text" id="creditoBanco" placeholder="Banco" style="width:100px;"></label>
+                                    <label>Cuenta: <input type="text" id="creditoCuenta" placeholder="Cuenta" style="width:100px;"></label>
+                                    <label>Tarjeta: <input type="text" id="creditoTarjeta" placeholder="N° Tarjeta" style="width:100px;"></label>
+                                    <input type="number" class="montoMetodo" id="monto_credito" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                                </div>
+                            </div>
+                            <div class="metodo-grupo"><strong>Cheque</strong>
+                                <div style="margin-left:16px; margin-bottom:6px;">
+                                    <label>Banco: <input type="text" id="chequeBanco" placeholder="Banco" style="width:100px;"></label>
+                                    <label>N° Cuenta: <input type="text" id="chequeCuenta" placeholder="N° Cuenta" style="width:100px;"></label>
+                                    <label>N° Cheque: <input type="text" id="chequeNumero" placeholder="N° Cheque" style="width:100px;"></label>
+                                    <input type="number" class="montoMetodo" id="monto_cheque" placeholder="Monto" min="0" step="0.01" style="width:100px;">
+                                </div>
+                            </div>
+                            <div class="metodo-grupo"><strong>Punto (Puntos de fidelidad)</strong>
+                                <div style="margin-left:16px; margin-bottom:6px;">
+                                    <input type="number" class="montoMetodo" id="monto_punto" placeholder="Puntos a usar" min="0" step="1" style="width:100px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <div class="summary-header">
+                        <h3><i class="fas fa-receipt"></i> Resumen del Pedido</h3>
+                    </div>
+                    <div class="order-items" id="orderItems">
+                        <!-- Order items will be loaded here -->
+                    </div>
+                    <div class="order-totals">
+                        <div class="total-line">
+                            <span>Subtotal:</span>
+                            <span>$<span id="subtotal">0.00</span></span>
+                        </div>
+                        <div class="total-line">
+                            <span>IVA (16%):</span>
+                            <span>$<span id="tax">0.00</span></span>
+                        </div>
+                        <div class="total-line total">
+                            <span>Total:</span>
+                            <span>$<span id="total">0.00</span></span>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-primary btn-block" id="placeOrderBtn">
+                            <i class="fas fa-check"></i>
+                            Confirmar Pedido
+                        </button>
+                        <a href="tienda.html" class="btn btn-secondary btn-block">
+                            <i class="fas fa-arrow-left"></i>
+                            Volver a Tienda
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+    <script src="auth.js"></script>
+    <script src="checkout-online.js"></script>
+</body>
+</html> 

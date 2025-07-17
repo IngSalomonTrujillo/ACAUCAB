@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAUCAB - Panel de Administración</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-beer"></i> ACAUCAB</h2>
+                <p>Panel de Administración</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li><a href="#" class="menu-item active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a></li>
+                    <li><a href="#" class="menu-item" data-section="usuarios">
+                        <i class="fas fa-users"></i>
+                        Usuarios
+                </a></li>
+                    <li><a href="#" class="menu-item" data-section="empleados">
+                        <i class="fas fa-user-tie"></i>
+                        Empleados
+                </a></li>
+                    <li><a href="#" class="menu-item" data-section="roles">
+                        <i class="fas fa-user-shield"></i>
+                        Roles
+                </a></li>
+                    <li><a href="#" class="menu-item" data-section="permisos">
+                        <i class="fas fa-key"></i>
+                        Permisos
+                </a></li>
+                    <li><a href="#" class="menu-item" data-section="reportes">
+                        <i class="fas fa-chart-bar"></i>
+                        Reportes
+                </a></li>
+                    <li id="menu-eventos"><a href="#" onclick="adminPanel.showSection('eventos')"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
+
+            </ul>
+        </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="content-header">
+                <div class="header-left">
+                <h1 id="page-title">Dashboard</h1>
+                    <p id="user-info">Cargando información del usuario...</p>
+                </div>
+                <div class="header-right">
+                    <button id="refresh-btn" class="btn btn-secondary">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar
+                    </button>
+                    <button id="logoutBtn" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section active">
+                <div class="dashboard-filters" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <label for="fecha-inicio">Desde:</label>
+                    <input type="date" id="fecha-inicio" />
+                    <label for="fecha-fin">Hasta:</label>
+                    <input type="date" id="fecha-fin" />
+                    <button id="dashboard-filtrar-btn" class="btn btn-primary">Actualizar</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-ventas-totales">$0</h3>
+                            <p>Ventas Totales</p>
+                            <small id="admin-ventas-desglose" style="display:block;color:#555;"></small>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-crecimiento-ventas">$0 (0%)</h3>
+                            <p>Crecimiento de Ventas (último mes vs. anterior)</p>
+                            <small id="admin-crecimiento-desglose" style="display:block;color:#555;"></small>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-ticket-promedio">$0</h3>
+                            <p>Ticket Promedio (último mes)</p>
+                            <small id="admin-ticket-desglose" style="display:block;color:#555;"></small>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-unidades-vendidas">0</h3>
+                            <p>Unidades Vendidas</p>
+                            <small id="admin-unidades-desglose" style="display:block;color:#555;"></small>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-clientes-nuevos-recurrentes">Nuevos: 0 | Recurrentes: 0</h3>
+                            <p>Clientes en el período</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-redo"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-retencion-clientes">0%</h3>
+                            <p>Tasa de Retención de Clientes</p>
+                            <small id="admin-retencion-desglose" style="display:block;color:#555;"></small>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-rotacion-inventario">0</h3>
+                            <p>Rotación de Inventario</p>
+                            <small id="admin-rotacion-desglose" style="display:block;color:#555;"></small>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="admin-stockout-rate">0%</h3>
+                            <p>Tasa de Ruptura de Stock</p>
+                            <small id="admin-stockout-desglose" style="display:block;color:#555;"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESUMEN VISUAL DE REPORTES CLAVE -->
+                <div class="dashboard-group" id="dashboard-reportes-clave">
+                    <h2>Reportes Clave</h2>
+                    <div class="dashboard-reportes-grid">
+                        <div class="chart-card">
+                            <h3>Gráfico de Tendencia de Ventas</h3>
+                            <canvas id="ventas-tendencia-chart" height="120"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Ventas por Canal de Distribución</h3>
+                            <canvas id="ventas-canal-chart" height="120"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-reportes-grid">
+                        <div class="table-card">
+                            <h3>Top 10 Productos Más Vendidos</h3>
+                            <table class="data-table" id="top-productos-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Producto</th>
+                                        <th>Presentación</th>
+                                        <th>Unidades Vendidas</th>
+                                        <th>Total Ventas (Bs)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se llenará dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-card">
+                            <h3>Inventario Actual</h3>
+                            <table class="data-table" id="inventario-actual-table">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Presentación</th>
+                                        <th>Stock Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se llenará dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Indicadores de Ventas -->
+                <div class="dashboard-group">
+                    <h2>Indicadores de Ventas</h2>
+                    <div class="chart-card">
+                        <h3>Ventas por Estilo de Cerveza</h3>
+                        <canvas id="grafico-ventas-estilo" height="120"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Ventas por Empleado</h3>
+                        <canvas id="grafico-ventas-empleado" height="120"></canvas>
+                    </div>
+                </div>
+                <!-- Puedes agregar más grupos para Clientes, Inventario, etc. -->
+            </div>
+
+            <!-- Usuarios Section -->
+            <div id="usuarios-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Usuarios</h2>
+                    <button id="add-usuario-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Agregar Usuario
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre de Usuario</th>
+                                <th>Empleado</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuarios-table-body">
+                            <!-- Los datos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Empleados Section -->
+            <div id="empleados-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Empleados</h2>
+                    <button id="add-empleado-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Agregar Empleado
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cédula</th>
+                                <th>Nombre Completo</th>
+                                <th>Fecha de Ingreso</th>
+                                <th>Salario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="empleados-table-body">
+                            <!-- Los datos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Roles Section -->
+            <div id="roles-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Roles</h2>
+                    <button id="add-rol-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Agregar Rol
+                                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre del Rol</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roles-table-body">
+                            <!-- Los datos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal para Ver Permisos de Rol -->
+            <div id="ver-permisos-modal" class="modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h3 id="ver-permisos-modal-title">Permisos del Rol</h3>
+                        <span class="close" onclick="adminPanel.closeModal('ver-permisos-modal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="rol-info">
+                            <h4 id="rol-nombre-info"></h4>
+                            <p id="rol-descripcion-info"></p>
+                        </div>
+                        
+                        <div class="permisos-resumen">
+                            <div class="resumen-card">
+                                <h5>Privilegios Asignados</h5>
+                                <div id="privilegios-lista" class="privilegios-lista">
+                                    <!-- Los privilegios se cargarán dinámicamente -->
+                                </div>
+                            </div>
+                            
+                            <div class="resumen-card">
+                                <h5>Permisos CRUD por Tabla</h5>
+                                <div id="crud-resumen" class="crud-resumen">
+                                    <!-- El resumen CRUD se cargará dinámicamente -->
+                                </div>
+                            </div>
+                            
+                            <div class="resumen-card">
+                                <h5>Usuarios con este Rol</h5>
+                                <div id="usuarios-rol-lista" class="usuarios-lista">
+                                    <!-- Los usuarios se cargarán dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="adminPanel.closeModal('ver-permisos-modal')">
+                            Cerrar
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="adminPanel.editarPermisosRol()">
+                            Editar Permisos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Permisos Section -->
+            <div id="permisos-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Permisos por Rol</h2>
+                    <div class="header-actions">
+                        <select id="rol-selector" class="form-select">
+                            <option value="">Seleccionar rol...</option>
+                        </select>
+                        <button id="save-permisos-btn" class="btn btn-primary" disabled>
+                            <i class="fas fa-save"></i>
+                            Guardar Permisos
+                    </button>
+                    </div>
+                </div>
+                
+                <div class="permisos-container">
+                    <div class="permisos-info">
+                        <p>Selecciona un rol para gestionar sus permisos CRUD por tabla de la base de datos.</p>
+                    </div>
+                    
+                    <div id="permisos-grid" class="permisos-grid">
+                        <!-- Los permisos se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reportes Section -->
+            <div id="reportes-section" class="content-section">
+                <div class="section-header">
+                    <h2>Reportes y Análisis</h2>
+                    <p>Genera reportes detallados sobre el rendimiento del negocio</p>
+                </div>
+                
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Ranking de Miembros Proveedores</h3>
+                            <p>Identifica y clasifica a los miembros proveedores de ACAUCAB según el número de tipos de cerveza que producen y ofrecen, ordenados por cantidad.</p>
+                            <button class="btn btn-primary" onclick="adminPanel.generateReport('ranking-proveedores')">
+                                <i class="fas fa-download"></i>
+                                Generar PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Valor de Puntos Canjeados</h3>
+                            <p>Calcula la suma total en bolívares (Bs) del valor de los puntos de fidelidad que han sido canjeados por los clientes en la tienda durante los últimos seis meses.</p>
+                            <button class="btn btn-primary" onclick="adminPanel.generateReport('puntos-canjeados')">
+                                <i class="fas fa-download"></i>
+                                Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-cash-register"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Flujo de Pago en Tienda Física</h3>
+                            <p>Detalla el volumen de ventas realizado en tienda física discriminando por tipo de medio de pago (efectivo, débito, crédito, cheque) por período de tiempo.</p>
+                            <button class="btn btn-primary" onclick="adminPanel.generateReport('flujo-pago')">
+                                <i class="fas fa-download"></i>
+                                Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Duración Promedio de Pedidos Online</h3>
+                            <p>Tiempo promedio que transcurre desde que un pedido cambia su estatus a "Listo para la entrega" hasta que es "Entregado" al cliente, agrupado por cada día de la semana.</p>
+                            <button class="btn btn-primary" onclick="adminPanel.generateReport('duracion-pedidos')">
+                                <i class="fas fa-download"></i>
+                                Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Empleados con Incumplimientos Horarios</h3>
+                            <p>Reporte que detalle a los empleados con el mayor número de incidentes de incumplimiento de horario (llegadas tarde o salidas tempranas) por período de tiempo.</p>
+                            <button class="btn btn-primary" onclick="adminPanel.generateReport('incumplimientos-horarios')">
+                                <i class="fas fa-download"></i>
+                                Generar PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Eventos Section -->
+            <div id="eventos-section" class="content-section" style="display:none;">
+                <div class="section-header">
+                    <h2>Gestión de Eventos</h2>
+                    <button class="btn btn-primary" onclick="adminPanel.openEventoModal()">Crear nuevo evento</button>
+                </div>
+                <div class="table-container">
+                    <table id="eventos-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Fecha inicio</th>
+                                <th>Fecha fin</th>
+                                <th>Descripción</th>
+                                <th>Dirección</th>
+                                <th>Entrada paga</th>
+                                <th>Lugar ID</th>
+                                <th>Tipo de Evento</th>
+                                <th>Entradas disponibles</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Usuarios -->
+            <div id="usuario-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                <h3 id="usuario-modal-title">Agregar Usuario</h3>
+                <span class="close" onclick="adminPanel.closeModal('usuario-modal')">&times;</span>
+                    </div>
+            <form id="usuario-form" class="modal-form">
+                                <div class="form-group">
+                    <label for="usuario-empleado">Empleado *</label>
+                    <select id="usuario-empleado" name="empleado" required>
+                                        <option value="">Seleccionar empleado...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                    <label for="usuario-rol">Rol *</label>
+                    <select id="usuario-rol" name="rol" required>
+                                        <option value="">Seleccionar rol...</option>
+                                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="usuario-nombre">Nombre de Usuario *</label>
+                    <input type="text" id="usuario-nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="usuario-contraseña">Contraseña *</label>
+                    <input type="password" id="usuario-contraseña" name="contraseña" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="adminPanel.closeModal('usuario-modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+                                </div>
+                            </div>
+                            
+    <!-- Modal para Empleados -->
+    <div id="empleado-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="empleado-modal-title">Agregar Empleado</h3>
+                <span class="close" onclick="adminPanel.closeModal('empleado-modal')">&times;</span>
+            </div>
+            <form id="empleado-form" class="modal-form">
+                <div class="form-group">
+                    <label for="empleado-cedula">Cédula de Identidad *</label>
+                    <input type="text" id="empleado-cedula" name="cedula" required>
+                </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                        <label for="empleado-primer-nombre">Primer Nombre *</label>
+                        <input type="text" id="empleado-primer-nombre" name="primerNombre" required>
+                                </div>
+                                <div class="form-group">
+                        <label for="empleado-segundo-nombre">Segundo Nombre</label>
+                        <input type="text" id="empleado-segundo-nombre" name="segundoNombre">
+                                </div>
+                            </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empleado-primer-apellido">Primer Apellido *</label>
+                        <input type="text" id="empleado-primer-apellido" name="primerApellido" required>
+                    </div>
+                            <div class="form-group">
+                        <label for="empleado-segundo-apellido">Segundo Apellido</label>
+                        <input type="text" id="empleado-segundo-apellido" name="segundoApellido">
+                            </div>
+                            </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empleado-fecha-ingreso">Fecha de Ingreso *</label>
+                        <input type="date" id="empleado-fecha-ingreso" name="fechaIngreso" required>
+                            </div>
+                    <div class="form-group">
+                        <label for="empleado-salario">Salario *</label>
+                        <input type="number" id="empleado-salario" name="salario" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="adminPanel.closeModal('empleado-modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Roles -->
+    <div id="rol-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="rol-modal-title">Agregar Rol</h3>
+                <span class="close" onclick="adminPanel.closeModal('rol-modal')">&times;</span>
+            </div>
+            <form id="rol-form" class="modal-form">
+                <div class="form-group">
+                    <label for="rol-nombre">Nombre del Rol *</label>
+                    <input type="text" id="rol-nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="rol-descripcion">Descripción *</label>
+                    <textarea id="rol-descripcion" name="descripcion" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Privilegios</label>
+                    <div class="privileges-grid">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="privilegios[]" value="Gestionar Usuarios">
+                            <span class="checkmark"></span>
+                            Gestionar Usuarios
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="privilegios[]" value="Ver Reportes">
+                            <span class="checkmark"></span>
+                            Ver Reportes
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="privilegios[]" value="Gestionar Productos">
+                            <span class="checkmark"></span>
+                            Gestionar Productos
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="privilegios[]" value="Acceso Básico">
+                            <span class="checkmark"></span>
+                            Acceso Básico
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="adminPanel.closeModal('rol-modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar evento -->
+    <div id="evento-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="adminPanel.closeModal('evento-modal')">&times;</span>
+            <h3 id="evento-modal-title">Crear/Editar Evento</h3>
+            <form id="evento-form" style="max-height: 70vh; overflow-y: auto;">
+                <input type="hidden" id="evento-id" />
+                <div class="form-group">
+                    <label for="evento-nombre">Nombre:</label>
+                    <input type="text" id="evento-nombre" required />
+                </div>
+                <div class="form-group">
+                    <label for="evento-fecha-inicio">Fecha inicio:</label>
+                    <input type="date" id="evento-fecha-inicio" required />
+                </div>
+                <div class="form-group">
+                    <label for="evento-fecha-fin">Fecha fin:</label>
+                    <input type="date" id="evento-fecha-fin" required />
+                </div>
+                <div class="form-group">
+                    <label for="evento-descripcion">Descripción:</label>
+                    <textarea id="evento-descripcion" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="evento-direccion">Dirección:</label>
+                    <input type="text" id="evento-direccion" required />
+                </div>
+                <div class="form-group">
+                    <label for="evento-entrada-paga">¿Requiere entrada paga?</label>
+                    <input type="checkbox" id="evento-entrada-paga" />
+                </div>
+                <div class="form-group">
+                    <label for="evento-lugar-id">Lugar (ID):</label>
+                    <input type="number" id="evento-lugar-id" required />
+                </div>
+                <div class="form-group">
+                    <label for="evento-tipo">Actividad (Tipo de Evento):</label>
+                    <select id="evento-tipo" required>
+                        <option value="">Seleccionar actividad...</option>
+                        <!-- Opciones dinámicas -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="evento-entradas-disponibles">Entradas disponibles:</label>
+                    <input type="number" id="evento-entradas-disponibles" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label for="evento-proveedores">Proveedores:</label>
+                    <select id="evento-proveedores" multiple required>
+                        <!-- Opciones dinámicas -->
+                    </select>
+                </div>
+                <div id="evento-cervezas-por-proveedor">
+                    <!-- Aquí se generarán dinámicamente los selects de cervezas por proveedor -->
+                </div>
+                <button type="submit" class="btn btn-success">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="auth.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

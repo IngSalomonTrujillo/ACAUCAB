@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - ACAUCAB</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/auth-styles.css">
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                <div>
+                    <h2 id="profileName">Nombre Apellido</h2>
+                    <p id="profileRole">Cliente</p>
+                </div>
+            </div>
+            <div class="profile-info">
+                <p><strong>Usuario:</strong> <span id="profileUsername">usuario</span></p>
+                <p><strong>Email:</strong> <span id="profileEmail">correo@ejemplo.com</span></p>
+            </div>
+            <button class="btn btn-primary" id="editProfileBtn"><i class="fas fa-edit"></i> Editar Perfil</button>
+        </div>
+        <div class="profile-history">
+            <h3>Historial de Compras</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Productos</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr>
+                        <td>2025-06-21</td>
+                        <td>IPA x2, Stout x1</td>
+                        <td>$15.00</td>
+                        <td><span class="badge badge-success">Pagado</span></td>
+                    </tr>
+                    <tr>
+                        <td>2025-06-15</td>
+                        <td>Lager x3</td>
+                        <td>$12.00</td>
+                        <td><span class="badge badge-danger">Pendiente</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="auth.js"></script>
+</body>
+</html>
